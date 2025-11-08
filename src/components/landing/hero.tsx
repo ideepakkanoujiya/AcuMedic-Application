@@ -18,9 +18,9 @@ export default function Hero() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (symptom.trim()) {
-      router.push(`/dashboard?symptom=${encodeURIComponent(symptom)}`);
+      router.push(`/symptom-checker?symptom=${encodeURIComponent(symptom)}`);
     } else {
-      router.push('/dashboard');
+      router.push('/symptom-checker');
     }
   };
 

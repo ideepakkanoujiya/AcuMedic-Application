@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { aiSymptomChecker } from '@/ai/flows/ai-symptom-checker';
 import { summarizeMedicalReport } from '@/ai/flows/summarize-medical-report';
 import { whatsappChatbotBooking } from '@/ai/flows/whatsapp-chatbot-booking';
 import { Input } from '@/components/ui/input';
@@ -12,24 +11,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 export default function Dashboard() {
-  const [symptomInput, setSymptomInput] = useState('');
   const [reportInput, setReportInput] = useState('');
   const [whatsappInput, setWhatsappInput] = useState('');
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
-  const handleSymptomCheck = async () => {
-    setLoading(true);
-    setResult(null);
-    try {
-      const res = await aiSymptomChecker({ symptoms: symptomInput });
-      setResult(res);
-    } catch (error) {
-      console.error(error);
-      setResult({ error: 'An error occurred.' });
-    }
-    setLoading(false);
-  };
 
   const handleReportSummarize = async () => {
     setLoading(true);
@@ -63,9 +48,8 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">MediQ AI Dashboard</h1>
-      <Tabs defaultValue="symptom-checker" className="w-full">
+      <Tabs defaultValue="report-summarizer" className="w-full">
         <TabsList>
-          <TabsTrigger value="symptom-checker">AI Symptom Checker</TabsTrigger>
           <TabsTrigger value="report-summarizer">
             Summarize Medical Report
           </TabsTrigger>
@@ -73,30 +57,6 @@ export default function Dashboard() {
             WhatsApp Chatbot Booking
           </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="symptom-checker">
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Symptom Checker</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="symptom-input">Symptoms</Label>
-                  <Input
-                    id="symptom-input"
-                    value={symptomInput}
-                    onChange={(e) => setSymptomInput(e.target.value)}
-                    placeholder="e.g., fever and headache"
-                  />
-                </div>
-                <Button onClick={handleSymptomCheck} disabled={loading}>
-                  {loading ? 'Checking...' : 'Check Symptoms'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="report-summarizer">
           <Card>
