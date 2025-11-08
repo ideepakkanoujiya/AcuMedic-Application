@@ -108,7 +108,7 @@ export default function Hero() {
                       </Button>
                     </form>
                 </PopoverTrigger>
-                <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[500px] md:w-[640px] p-4" align="center">
+                <PopoverContent side="bottom" className="w-[calc(100vw-2rem)] sm:w-[500px] md:w-[640px] p-4" align="center">
                     <p className="text-sm font-medium text-muted-foreground mb-3 px-2">Suggestions</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {suggestions.map((item) => (
