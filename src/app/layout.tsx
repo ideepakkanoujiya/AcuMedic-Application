@@ -4,7 +4,6 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import ClientOnly from '@/components/layout/client-only';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
@@ -23,13 +22,9 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${manrope.variable} font-body antialiased`}>
         <div className="flex min-h-screen flex-col bg-background">
-          <ClientOnly>
-            <Header />
-          </ClientOnly>
+          <Header />
           <main className="flex-1">{children}</main>
-          <ClientOnly>
-            <Footer />
-          </ClientOnly>
+          <Footer />
         </div>
         <Toaster />
       </body>
