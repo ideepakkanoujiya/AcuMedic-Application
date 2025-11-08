@@ -168,125 +168,127 @@ export default function AiAssistantPage() {
   }, [analysis]);
 
   return (
-    <div className="grid lg:grid-cols-3 xl:grid-cols-4 h-screen">
-      <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-full bg-muted/20">
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
-          {messages.map((msg, index) => (
-            <ChatMessageBubble key={index} message={msg} />
-          ))}
-           {isLoading && messages[messages.length - 1]?.sender === 'user' && (
-              <div className="flex items-start gap-3">
-                 <Avatar className="h-8 w-8">
-                  <AvatarFallback><Bot /></AvatarFallback>
-                </Avatar>
-                <div className="max-w-xs md:max-w-md rounded-xl p-3 bg-muted">
-                    <Loader2 className="h-5 w-5 animate-spin"/>
+    <div className="flex min-h-screen flex-col bg-background">
+      <main className="flex-1 grid lg:grid-cols-3 xl:grid-cols-4">
+        <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-screen bg-muted/20">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
+            {messages.map((msg, index) => (
+              <ChatMessageBubble key={index} message={msg} />
+            ))}
+             {isLoading && messages[messages.length - 1]?.sender === 'user' && (
+                <div className="flex items-start gap-3">
+                   <Avatar className="h-8 w-8">
+                    <AvatarFallback><Bot /></AvatarFallback>
+                  </Avatar>
+                  <div className="max-w-xs md:max-w-md rounded-xl p-3 bg-muted">
+                      <Loader2 className="h-5 w-5 animate-spin"/>
+                  </div>
                 </div>
+            )}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="p-4 border-t bg-background"
+          >
+            {imagePreview && (
+              <div className="relative w-24 h-24 mb-2 p-1 border rounded-md">
+                  <Image src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md" width={96} height={96}/>
+                  <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 z-10 rounded-full" onClick={removeImage}>
+                      <X className="h-4 w-4"/>
+                  </Button>
               </div>
-          )}
+            )}
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Describe your symptoms..."
+                className="h-12 pr-28"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !isLoading && handleSendMessage()}
+                disabled={isLoading}
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
+                  <ImagePlus className="h-5 w-5" />
+                </Button>
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+                <Button variant="ghost" size="icon" disabled={isLoading}>
+                  <Mic className="h-5 w-5" />
+                </Button>
+                <Button size="icon" onClick={handleSendMessage} disabled={(!input.trim() && !imageFile) || isLoading}>
+                   {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="p-4 border-t bg-background"
-        >
-          {imagePreview && (
-            <div className="relative w-24 h-24 mb-2 p-1 border rounded-md">
-                <Image src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md" width={96} height={96}/>
-                <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 z-10 rounded-full" onClick={removeImage}>
-                    <X className="h-4 w-4"/>
-                </Button>
-            </div>
-          )}
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Describe your symptoms..."
-              className="h-12 pr-28"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && !isLoading && handleSendMessage()}
-              disabled={isLoading}
-            />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
-                <ImagePlus className="h-5 w-5" />
-              </Button>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-              <Button variant="ghost" size="icon" disabled={isLoading}>
-                <Mic className="h-5 w-5" />
-              </Button>
-              <Button size="icon" onClick={handleSendMessage} disabled={(!input.trim() && !imageFile) || isLoading}>
-                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+        <aside className="hidden lg:block lg:col-span-1 p-6 border-l overflow-y-auto bg-background h-screen">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-6"
+          >
+          {analysis ? (
+            <>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertCircle className={cn("h-6 w-6", urgencyBadgeVariant === 'destructive' ? 'text-destructive': 'text-yellow-500')} />
+                  Urgency Warning
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Badge variant={urgencyBadgeVariant} className="text-base capitalize">{analysis.emergencyLevel}</Badge>
+                <p className="text-muted-foreground mt-2 text-sm">Based on the provided symptoms, please consider the recommended next steps.</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Triage Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-semibold">Possible Conditions</h4>
+                  <ul className="list-disc list-inside text-muted-foreground text-sm">
+                      {analysis.possibleConditions.map((condition, index) => (
+                        <li key={index}>{condition}</li>
+                      ))}
+                  </ul>
+                </div>
+                 <div>
+                  <h4 className="font-semibold">Recommended Specialty</h4>
+                  <p className="text-muted-foreground text-sm">{analysis.recommendedSpecialty}</p>
+                </div>
+              </CardContent>
+            </Card>
 
-      <aside className="hidden lg:block lg:col-span-1 p-6 border-l overflow-y-auto bg-background">
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-6"
-        >
-        {analysis ? (
-          <>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className={cn("h-6 w-6", urgencyBadgeVariant === 'destructive' ? 'text-destructive': 'text-yellow-500')} />
-                Urgency Warning
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Badge variant={urgencyBadgeVariant} className="text-base capitalize">{analysis.emergencyLevel}</Badge>
-              <p className="text-muted-foreground mt-2 text-sm">Based on the provided symptoms, please consider the recommended next steps.</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Triage Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-semibold">Possible Conditions</h4>
-                <ul className="list-disc list-inside text-muted-foreground text-sm">
-                    {analysis.possibleConditions.map((condition, index) => (
-                      <li key={index}>{condition}</li>
-                    ))}
-                </ul>
-              </div>
-               <div>
-                <h4 className="font-semibold">Recommended Specialty</h4>
-                <p className="text-muted-foreground text-sm">{analysis.recommendedSpecialty}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Next Steps</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full">Find a Specialist</Button>
-              <Button variant="outline" className="w-full">Book a Video Consultation</Button>
-            </CardContent>
-          </Card>
-          </>
-          ) : (
-             <div className="text-center py-12 text-muted-foreground">
-                <Bot className="mx-auto h-12 w-12" />
-                <h3 className="mt-4 text-lg font-semibold">Awaiting Analysis</h3>
-                <p className="mt-1 text-sm">The AI's analysis will appear here once you describe your symptoms.</p>
-              </div>
-          )}
-        </motion.div>
-      </aside>
+            <Card>
+              <CardHeader>
+                <CardTitle>Next Steps</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button className="w-full">Find a Specialist</Button>
+                <Button variant="outline" className="w-full">Book a Video Consultation</Button>
+              </CardContent>
+            </Card>
+            </>
+            ) : (
+               <div className="text-center py-12 text-muted-foreground">
+                  <Bot className="mx-auto h-12 w-12" />
+                  <h3 className="mt-4 text-lg font-semibold">Awaiting Analysis</h3>
+                  <p className="mt-1 text-sm">The AI's analysis will appear here once you describe your symptoms.</p>
+                </div>
+            )}
+          </motion.div>
+        </aside>
+      </main>
     </div>
   );
 }
