@@ -2,27 +2,32 @@
 import { Bot, Clock, MessageSquare, FolderClock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const features = [
   {
     icon: <Bot className="h-8 w-8 text-primary" />,
     title: "AI Symptom Checker",
     description: "Get an initial diagnosis and recommendation from our advanced AI.",
+    href: "/symptom-checker",
   },
   {
     icon: <Clock className="h-8 w-8 text-primary" />,
     title: "Smart Queue & Wait Time",
     description: "Track your queue position and wait time in real-time. No more guessing.",
+    href: "#",
   },
   {
     icon: <MessageSquare className="h-8 w-8 text-primary" />,
     title: "WhatsApp Booking",
     description: "Book appointments directly through WhatsApp for ultimate convenience.",
+    href: "#",
   },
   {
     icon: <FolderClock className="h-8 w-8 text-primary" />,
     title: "Report Storage & History",
     description: "Securely store and access your medical reports and history anytime.",
+    href: "#",
   },
 ];
 
@@ -47,15 +52,9 @@ export default function Features() {
           </motion.p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="text-center shadow-lg hover:shadow-primary/20 transition-shadow duration-300 transform hover:-translate-y-2 h-full bg-card/50 backdrop-blur-sm">
+          {features.map((feature, index) => {
+            const cardContent = (
+               <Card className="text-center shadow-lg hover:shadow-primary/20 transition-shadow duration-300 transform hover:-translate-y-2 h-full bg-card/50 backdrop-blur-sm">
                 <CardHeader className="items-center p-6">
                   {feature.icon}
                   <CardTitle className="mt-4">{feature.title}</CardTitle>
@@ -64,8 +63,26 @@ export default function Features() {
                   <CardDescription>{feature.description}</CardDescription>
                 </CardContent>
               </Card>
-            </motion.div>
-          ))}
+            );
+
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                {feature.href !== '#' && feature.href ? (
+                  <Link href={feature.href} className="block h-full">
+                    {cardContent}
+                  </Link>
+                ) : (
+                  cardContent
+                )}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </section>
