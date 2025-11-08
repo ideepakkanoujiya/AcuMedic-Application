@@ -1,33 +1,33 @@
 "use client";
-import { Bot, Users, Video, MessageCircle, FileClock } from 'lucide-react';
+import { Bot, Users, Video, FileClock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const features = [
   {
     icon: <Bot className="h-8 w-8 text-primary" />,
     title: "AI Symptom Analysis",
     description: "Get immediate insights on your symptoms with our advanced AI triage.",
+    href: "/ai-assistant",
   },
   {
     icon: <Users className="h-8 w-8 text-primary" />,
     title: "Live Queue Tracking",
     description: "See your real-time position and estimated wait time for your appointment.",
+    href: "/queue",
   },
   {
     icon: <Video className="h-8 w-8 text-primary" />,
     title: "Tele-Consultations",
     description: "Connect with top doctors from the comfort of your home via secure video.",
-  },
-  {
-    icon: <MessageCircle className="h-8 w-8 text-primary" />,
-    title: "WhatsApp Chatbot",
-    description: "Book and manage appointments effortlessly using our smart WhatsApp assistant.",
+    href: "/doctors?consultType=video",
   },
   {
     icon: <FileClock className="h-8 w-8 text-primary" />,
     title: "Medical Reports",
     description: "All your medical history and reports, securely stored and accessible anytime.",
+    href: "/dashboard",
   },
 ];
 
@@ -74,7 +74,7 @@ export default function Features() {
           </motion.p>
         </div>
         <motion.div 
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-2 gap-8"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -82,13 +82,15 @@ export default function Features() {
         >
           {features.map((feature, index) => (
              <motion.div key={index} variants={itemVariants} className="h-full">
-                <Card className="text-left shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1 h-full bg-card/50 backdrop-blur-sm border-border/50">
+               <Link href={feature.href} className="h-full flex">
+                <Card className="w-full text-left shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1 h-full bg-card/50 backdrop-blur-sm border-border/50">
                   <CardHeader>
                     {feature.icon}
                     <CardTitle className="mt-4 text-xl">{feature.title}</CardTitle>
                     <CardDescription className="pt-1">{feature.description}</CardDescription>
                   </CardHeader>
                 </Card>
+               </Link>
               </motion.div>
           ))}
         </motion.div>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Calendar, FileText, Bell, User } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -63,7 +63,9 @@ export default function Dashboard() {
                         </div>
                          <div className="flex gap-2 mt-4 md:mt-0">
                             <Button>Join Video Call</Button>
-                            <Button variant="outline">Check Queue</Button>
+                            <Button variant="outline" asChild>
+                              <Link href="/queue">Check Queue</Link>
+                            </Button>
                         </div>
                     </Card>
                  </motion.div>
