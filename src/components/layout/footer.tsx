@@ -1,9 +1,10 @@
 import { Logo } from '@/components/logo';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-export default function Footer() {
+export default function Footer({className}: {className?: string}) {
   return (
-    <footer className="border-t bg-background">
+    <footer className={cn("border-t bg-background", className)}>
       <div className="container py-12">
         <div className="grid gap-12 md:grid-cols-3">
           <div className="space-y-4">

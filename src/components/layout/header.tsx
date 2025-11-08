@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: "/ai-assistant", label: "AI Assistant" },
@@ -16,9 +17,9 @@ const navLinks = [
   { href: "/dashboard", label: "My Dashboard" },
 ];
 
-export default function Header() {
+export default function Header({className}: {className?: string}) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn("sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">
         <Logo />
         <nav className="hidden md:flex items-center gap-6 ml-10">

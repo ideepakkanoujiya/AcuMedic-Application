@@ -3,6 +3,7 @@
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -11,9 +12,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
-            {!isSimpleLayout && <Header />}
+            <Header className={cn(isSimpleLayout ? "hidden" : "")}/>
             <main className="flex-1">{children}</main>
-            {!isSimpleLayout && <Footer />}
+            <Footer className={cn(isSimpleLayout ? "hidden" : "")}/>
         </div>
     )
 }
