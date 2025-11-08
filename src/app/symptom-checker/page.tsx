@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -10,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Mic, Upload, File as FileIcon, X } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { useToast } from "@/hooks/use-toast";
 
 export default function SymptomCheckerPage() {
   const searchParams = useSearchParams();
@@ -20,6 +22,7 @@ export default function SymptomCheckerPage() {
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const symptomFromURL = searchParams.get('symptom');
@@ -58,7 +61,11 @@ export default function SymptomCheckerPage() {
       };
       
       recognition.onerror = (event) => {
-        console.error("Speech recognition error", event.error);
+        toast({
+          variant: "destructive",
+          title: "Speech Recognition Error",
+          description: `An error occurred: ${event.error}. Please check your microphone permissions and network connection.`,
+        });
         setIsListening(false);
       }
 
@@ -68,7 +75,7 @@ export default function SymptomCheckerPage() {
     return () => {
       recognitionRef.current?.stop();
     };
-  }, []);
+  }, [toast]);
 
   const handleMicClick = () => {
     if (isListening) {
