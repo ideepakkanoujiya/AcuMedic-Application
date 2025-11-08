@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Calendar, FileText, Bell, User, Video } from 'lucide-react';
+import { Calendar, FileText, Bell, User, Video, Bot } from 'lucide-react';
 import Link from 'next/link';
 
 const containerVariants = {
@@ -38,6 +38,29 @@ export default function Dashboard() {
         <p className="text-muted-foreground mb-8">
           Welcome back! Here's your health overview.
         </p>
+      </motion.div>
+
+      <motion.div
+        variants={itemVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.2 }}
+        className="mb-8"
+      >
+        <Card className="bg-primary/10 border-primary/20 flex flex-col md:flex-row items-center justify-between p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary/20 p-3 rounded-full">
+              <Bot className="h-8 w-8 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">Have a health question?</h3>
+              <p className="text-muted-foreground">Chat with our AI Medical Assistant for instant answers.</p>
+            </div>
+          </div>
+          <Button asChild className="mt-4 md:mt-0 w-full md:w-auto">
+            <Link href="/ai-assistant">Start Chat</Link>
+          </Button>
+        </Card>
       </motion.div>
 
       <Tabs defaultValue="appointments" className="w-full">
