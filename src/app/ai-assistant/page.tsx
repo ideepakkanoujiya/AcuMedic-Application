@@ -2,12 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X } from 'lucide-react';
+import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -55,8 +57,10 @@ const ChatMessageBubble = ({ message }: { message: Message }) => {
 export default function AiAssistantPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<AISymptomCheckerOutput | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -64,23 +68,54 @@ export default function AiAssistantPage() {
     chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (input.trim() === '' && !imageFile) return;
+    setIsLoading(true);
 
     const userMessage: Message = { sender: 'user', text: input };
     if (imagePreview) {
       userMessage.imagePreview = imagePreview;
     }
+    
+    const currentInput = input;
+    const currentImagePreview = imagePreview;
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setImageFile(null);
     setImagePreview(null);
+    setAnalysis(null);
 
-    // Simulate bot response
+    // Initial bot thinking message
     setTimeout(() => {
       setMessages(prev => [...prev, { sender: 'bot', text: 'I am analyzing your symptoms. Please wait a moment.' }]);
-    }, 1000);
+    }, 500);
+
+    try {
+      const result = await aiSymptomChecker({
+        symptoms: currentInput,
+        image: currentImagePreview ?? undefined,
+      });
+
+      setAnalysis(result);
+      
+      const botResponse: Message = {
+        sender: 'bot',
+        text: `Based on your symptoms, here is a summary: I've identified a possible emergency level of **${result.emergencyLevel}**. The possible conditions could be **${result.possibleConditions.join(', ')}**. I recommend consulting with a **${result.recommendedSpecialty}** specialist.`,
+      };
+
+      setMessages(prev => [...prev.slice(0, -1), botResponse]);
+
+    } catch (error) {
+      console.error("Error calling AI symptom checker:", error);
+      const errorResponse: Message = {
+        sender: 'bot',
+        text: 'I am sorry, but I was unable to analyze your symptoms. Please try again.',
+      };
+      setMessages(prev => [...prev.slice(0, -1), errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +138,19 @@ export default function AiAssistantPage() {
     }
   }
 
+  const getUrgencyBadgeVariant = () => {
+    if (!analysis) return 'default';
+    switch (analysis.emergencyLevel.toLowerCase()) {
+      case 'critical':
+      case 'high urgency':
+        return 'destructive';
+      case 'urgent':
+        return 'secondary';
+      default:
+        return 'default';
+    }
+  }
+
   return (
     <div className="grid lg:grid-cols-3 xl:grid-cols-4 h-[calc(100vh-4rem)]">
       <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-full bg-muted/20">
@@ -111,6 +159,16 @@ export default function AiAssistantPage() {
           {messages.map((msg, index) => (
             <ChatMessageBubble key={index} message={msg} />
           ))}
+           {isLoading && messages[messages.length - 1]?.sender === 'user' && (
+              <div className="flex items-start gap-3">
+                 <Avatar className="h-8 w-8">
+                  <AvatarFallback><Bot /></AvatarFallback>
+                </Avatar>
+                <div className="max-w-xs md:max-w-md rounded-xl p-3 bg-muted">
+                    <Loader2 className="h-5 w-5 animate-spin"/>
+                </div>
+              </div>
+          )}
         </div>
 
         <motion.div
@@ -121,7 +179,7 @@ export default function AiAssistantPage() {
         >
           {imagePreview && (
             <div className="relative w-24 h-24 mb-2 p-1 border rounded-md">
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md"/>
+                <Image src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-md" width={96} height={96}/>
                 <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 z-10 rounded-full" onClick={removeImage}>
                     <X className="h-4 w-4"/>
                 </Button>
@@ -134,18 +192,19 @@ export default function AiAssistantPage() {
               className="h-12 pr-28"
               value={input}
               onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+              onKeyDown={e => e.key === 'Enter' && !isLoading && handleSendMessage()}
+              disabled={isLoading}
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()}>
+              <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
                 <ImagePlus className="h-5 w-5" />
               </Button>
               <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" disabled={isLoading}>
                 <Mic className="h-5 w-5" />
               </Button>
-              <Button size="icon" onClick={handleSendMessage} disabled={!input.trim() && !imageFile}>
-                <Send className="h-5 w-5" />
+              <Button size="icon" onClick={handleSendMessage} disabled={(!input.trim() && !imageFile) || isLoading}>
+                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
           </div>
@@ -159,16 +218,18 @@ export default function AiAssistantPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="space-y-6"
         >
+        {analysis ? (
+          <>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="text-destructive h-6 w-6" />
+                <AlertCircle className={cn("h-6 w-6", getUrgencyBadgeVariant() === 'destructive' ? 'text-destructive': 'text-yellow-500')} />
                 Urgency Warning
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Badge variant="destructive" className="text-base">High Urgency</Badge>
-              <p className="text-muted-foreground mt-2 text-sm">Based on the provided symptoms, immediate medical attention is recommended.</p>
+              <Badge variant={getUrgencyBadgeVariant()} className="text-base capitalize">{analysis.emergencyLevel}</Badge>
+              <p className="text-muted-foreground mt-2 text-sm">Based on the provided symptoms, please consider the recommended next steps.</p>
             </CardContent>
           </Card>
           
@@ -180,13 +241,14 @@ export default function AiAssistantPage() {
               <div>
                 <h4 className="font-semibold">Possible Conditions</h4>
                 <ul className="list-disc list-inside text-muted-foreground text-sm">
-                    <li>Condition A</li>
-                    <li>Condition B</li>
+                    {analysis.possibleConditions.map((condition, index) => (
+                      <li key={index}>{condition}</li>
+                    ))}
                 </ul>
               </div>
                <div>
                 <h4 className="font-semibold">Recommended Specialty</h4>
-                <p className="text-muted-foreground text-sm">Cardiology</p>
+                <p className="text-muted-foreground text-sm">{analysis.recommendedSpecialty}</p>
               </div>
             </CardContent>
           </Card>
@@ -200,6 +262,14 @@ export default function AiAssistantPage() {
               <Button variant="outline" className="w-full">Book a Video Consultation</Button>
             </CardContent>
           </Card>
+          </>
+          ) : (
+             <div className="text-center py-12 text-muted-foreground">
+                <Bot className="mx-auto h-12 w-12" />
+                <h3 className="mt-4 text-lg font-semibold">Awaiting Analysis</h3>
+                <p className="mt-1 text-sm">The AI's analysis will appear here once you describe your symptoms.</p>
+              </div>
+          )}
         </motion.div>
       </aside>
     </div>
