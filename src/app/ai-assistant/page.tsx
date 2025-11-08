@@ -130,7 +130,7 @@ export default function AiAssistantPage() {
     <div className="flex h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
        <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-         <Link href="/" className="font-bold">MediQ AI Assistant</Link>
+         <Link href="/" className="font-bold">AcuMedic Assistant</Link>
          <Button variant="ghost" asChild><Link href="/">Home</Link></Button>
        </div>
       </header>

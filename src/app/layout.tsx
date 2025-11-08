@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
 
 export const metadata: Metadata = {
-  title: 'MediQ AI',
+  title: 'AcuMedic',
   description: 'Intelligent Medical Triage + Appointment Booking System',
 };
 

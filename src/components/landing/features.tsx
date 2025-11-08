@@ -70,7 +70,7 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
             className="mt-4 text-muted-foreground md:text-lg">
-            MediQ AI integrates state-of-the-art technology to provide a healthcare experience that is intelligent, convenient, and tailored to you.
+            AcuMedic integrates state-of-the-art technology to provide a healthcare experience that is intelligent, convenient, and tailored to you.
           </motion.p>
         </div>
         <motion.div 

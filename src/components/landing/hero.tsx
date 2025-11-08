@@ -4,11 +4,55 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Stethoscope, Ambulance, Hospital, Bot, BrainCircuit, HeartPulse, Dna, Calendar, Users, Globe } from 'lucide-react';
+import { Search, Stethoscope, Calendar, Users, Globe, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+
+const IconPill = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 256 256"
+    {...props}
+    fill="currentColor"
+  >
+    <path d="M156.23,28.23,40.48,143.76a44,44,0,0,0,62.24,62.24L218,89.77a44,44,0,0,0-61.77-61.54Z" />
+  </svg>
+);
+
+const IconVirus = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 256 256"
+    {...props}
+    fill="currentColor"
+  >
+    <path d="M232,104a8,8,0,0,0-8,8v16a8,8,0,0,0,16,0V112A8,8,0,0,0,232,104ZM128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM112,32a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,112,32Zm32,0a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,144,32Zm8,72v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm-32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm-32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm0,32v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0ZM112,224a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,112,224Zm32,0a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,144,224Zm-80-88H80a8,8,0,0,0,0,16h8a8,8,0,0,0,0-16ZM32,144a8,8,0,0,1-8-8,8,8,0,0,1,0,16A8,8,0,0,1,32,144Zm16-32V96a8,8,0,0,0-16,0v16a8,8,0,0,0,16,0Z" />
+  </svg>
+);
+
+const IconPlus = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 256 256"
+    {...props}
+    fill="currentColor"
+  >
+    <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
+  </svg>
+);
+
+const IconDna = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 256 256"
+    {...props}
+    fill="currentColor"
+  >
+    <path d="M229.49,65.4l-48-32a12,12,0,1,0-12.91,19.29l22.4,15C136.2,85.1,123.7,128.8,131,168.32l-22.31,14.88a12,12,0,1,0,12.62,19l48-32a12,12,0,1,0-12.62-19L134.4,166.1c-6.19-33,4.4-71,58.07-88.42l22.4,15A12,12,0,1,0,229.49,65.4ZM125,87.68c-53.67-17.4-66.17,26.3-58.09,60.22L34.51,174.6a12,12,0,1,0,12.62,19l48-32a12,12,0,1,0-12.62-19l-22.31,14.88C52.3,123.2,64.8,79.5,119.58,97.1l22.31-14.88a12,12,0,1,0-12.62-19Z" />
+  </svg>
+);
 
 
 const baseSuggestions = [
@@ -19,10 +63,10 @@ const baseSuggestions = [
 ];
 
 const floatingIcons = [
-  { icon: BrainCircuit, className: 'top-[10%] left-[5%] w-16 h-16', duration: 12 },
-  { icon: HeartPulse, className: 'top-[20%] right-[8%] w-12 h-12', duration: 10 },
-  { icon: Dna, className: 'bottom-[15%] left-[15%] w-14 h-14', duration: 15 },
-  { icon: Stethoscope, className: 'bottom-[10%] right-[12%] w-10 h-10', duration: 9 },
+  { icon: IconPill, className: 'top-[10%] left-[5%] w-16 h-16', duration: 12 },
+  { icon: IconVirus, className: 'top-[20%] right-[8%] w-12 h-12', duration: 10 },
+  { icon: IconDna, className: 'bottom-[15%] left-[15%] w-14 h-14', duration: 15 },
+  { icon: IconPlus, className: 'bottom-[10%] right-[12%] w-10 h-10', duration: 9 },
 ];
 
 export default function Hero() {
@@ -85,9 +129,9 @@ export default function Hero() {
             className="space-y-8"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter font-headline">
-              Smarter Healthcare,
+              Your Health,
               <br />
-              <span className="text-primary">Instantly.</span>
+              <span className="text-primary">Decoded.</span>
             </h1>
             <p className="max-w-[600px] mx-auto text-lg text-muted-foreground">
               From instant AI-driven symptom analysis to seamless appointment booking, take control of your health journey with confidence.
@@ -121,7 +165,7 @@ export default function Hero() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {dynamicSuggestions.map((item) => (
                            <Link key={item.name} href={item.href} target={item.external ? '_blank' : '_self'} rel={item.external ? 'noopener noreferrer' : ''} className="block" onClick={() => setPopoverOpen(false)}>
-                            <div className={cn("flex items-center gap-3 p-3 rounded-md hover:bg-muted transition-colors cursor-pointer", item.name.includes('Ambulance') && 'text-destructive hover:bg-destructive/10')}>
+                            <div className={cn("flex items-center gap-3 p-3 rounded-md hover:bg-muted transition-colors cursor-pointer")}>
                                 {item.icon}
                                 <span className="font-medium text-sm truncate">{item.name}</span>
                             </div>

@@ -50,7 +50,7 @@ export default function Footer({className}: {className?: string}) {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} MediQ AI. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} AcuMedic. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
