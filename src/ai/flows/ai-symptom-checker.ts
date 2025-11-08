@@ -36,6 +36,7 @@ const AISymptomCheckerOutputSchema = z.object({
     .describe('The emergency level of the condition (normal / urgent / critical).'),
   possibleConditions: z.array(z.string()).describe('A list of possible medical conditions.'),
   recommendedSpecialty: z.string().describe('The recommended medical specialty (ICD-10 based mapping).'),
+  detailedAnalysis: z.string().describe('A detailed analysis of the symptoms, explaining the reasoning behind the triage assessment and potential conditions in a clear, easy-to-understand paragraph.'),
 });
 export type AISymptomCheckerOutput = z.infer<typeof AISymptomCheckerOutputSchema>;
 
@@ -47,20 +48,24 @@ const prompt = ai.definePrompt({
   name: 'aiSymptomCheckerPrompt',
   input: {schema: AISymptomCheckerInputSchema},
   output: {schema: AISymptomCheckerOutputSchema},
-  prompt: `You are an AI medical triage assistant. A patient will describe their symptoms, and you will determine the emergency level, possible conditions, and recommended medical specialty.
+  prompt: `You are an AI medical triage assistant. Your role is to analyze a patient's symptoms and provide a preliminary assessment.
 
-Symptoms: {{{symptoms}}}
+Patient Symptoms: {{{symptoms}}}
 
 {{#if language}}Language: {{{language}}}{{/if}}
 {{#if voiceInput}}Voice Input: {{{voiceInput}}}{{/if}}
 {{#if image}}
-Analyze the following image in conjunction with the symptoms.
+Also analyze the following image in conjunction with the symptoms.
 Image: {{media url=image}}
-{{else}}
-Analyze the symptoms provided.
 {{/if}}
 
-Respond with the emergency level (normal, urgent, or critical), a list of possible conditions, and the recommended medical specialty.
+Based on the information provided, perform the following tasks:
+1.  **Determine the Emergency Level:** Classify the situation as 'normal', 'urgent', or 'critical'.
+2.  **Identify Possible Conditions:** List a few potential medical conditions that could be causing these symptoms.
+3.  **Recommend a Medical Specialty:** Suggest the most appropriate medical specialty for the patient to consult (e.g., Cardiologist, Dermatologist).
+4.  **Provide a Detailed Analysis:** Write a clear, easy-to-understand paragraph that explains your reasoning for the emergency level and recommended specialty. Summarize what the analysis indicates in a helpful way for the user.
+
+Your response must be in the structured format defined by the output schema.
 `,
 });
 

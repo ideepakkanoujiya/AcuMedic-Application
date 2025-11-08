@@ -171,8 +171,8 @@ export default function AiAssistantPage() {
   }, [analysis]);
 
   return (
-    <>
     <div className="flex min-h-screen flex-col bg-background">
+      <Header />
       <main className="flex-1 grid lg:grid-cols-3 xl:grid-cols-4">
         <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-screen bg-muted/20">
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -258,6 +258,10 @@ export default function AiAssistantPage() {
                 <CardTitle>Triage Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div>
+                    <h4 className="font-semibold">Detailed Analysis</h4>
+                    <p className="text-muted-foreground text-sm">{analysis.detailedAnalysis}</p>
+                </div>
                 <div>
                   <h4 className="font-semibold">Possible Conditions</h4>
                   <ul className="list-disc list-inside text-muted-foreground text-sm">
@@ -368,6 +372,17 @@ export default function AiAssistantPage() {
         </aside>
       </main>
     </div>
-    </>
   );
+}
+
+// Dummy Header component to avoid breaking layout, as it's not the focus of the change.
+function Header() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
+         <Link href="/" className="font-bold">MediQ AI</Link>
+         <Button variant="ghost" asChild><Link href="/">Home</Link></Button>
+       </div>
+    </header>
+  )
 }
