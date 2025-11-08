@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Stethoscope, Ambulance, Hospital, Bot } from 'lucide-react';
+import { Search, Stethoscope, Ambulance, Hospital, Bot, BrainCircuit, HeartPulse, Dna } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -17,6 +17,13 @@ const suggestions = [
     { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" /> },
     { name: 'Nearby Hospitals', href: 'https://www.google.com/maps/search/nearby+hospitals', icon: <Hospital className="h-5 w-5 text-primary" />, external: true },
     { name: 'Call an Ambulance', href: 'tel:112', icon: <Ambulance className="h-5 w-5 text-destructive" />, external: true },
+];
+
+const floatingIcons = [
+  { icon: BrainCircuit, className: 'top-[10%] left-[5%] w-16 h-16', duration: 12 },
+  { icon: HeartPulse, className: 'top-[20%] right-[8%] w-12 h-12', duration: 10 },
+  { icon: Dna, className: 'bottom-[15%] left-[15%] w-14 h-14', duration: 15 },
+  { icon: Stethoscope, className: 'bottom-[10%] right-[12%] w-10 h-10', duration: 9 },
 ];
 
 export default function Hero() {
@@ -40,6 +47,28 @@ export default function Hero() {
         <div className="blur-[106px] h-56 bg-gradient-to-br from-primary to-purple-400 dark:from-blue-700" />
         <div className="blur-[106px] h-32 bg-gradient-to-r from-cyan-400 to-sky-300 dark:to-indigo-600" />
       </div>
+
+       {floatingIcons.map((item, index) => {
+        const Icon = item.icon;
+        return (
+          <motion.div
+            key={index}
+            className={cn("absolute text-primary/10", item.className)}
+            animate={{
+              y: ["0%", "5%", "0%", "-5%", "0%"],
+              rotate: [0, 5, 0, -5, 0],
+            }}
+            transition={{
+              duration: item.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <Icon />
+          </motion.div>
+        )
+      })}
+
       <div className="container relative z-10">
         <div className="flex flex-col items-center text-center">
           <motion.div
@@ -95,7 +124,11 @@ export default function Hero() {
               </Popover>
 
                 <div className="mt-6 flex items-center justify-center gap-4">
-                    <Button size="lg" className="w-full sm:w-auto" asChild>
+                    <Button 
+                      size="lg" 
+                      className="w-full sm:w-auto bg-gradient-to-r from-primary to-blue-400 text-white shadow-lg hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105" 
+                      asChild
+                    >
                        <Link href="/ai-assistant">Start AI Symptom Check</Link>
                     </Button>
                 </div>
