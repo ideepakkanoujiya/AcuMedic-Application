@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Stethoscope, Calendar, Users, Globe, Bot } from 'lucide-react';
+import { Search, Stethoscope, Calendar, Globe, Bot, MapPin, Siren } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -36,10 +36,10 @@ const IconMind = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 const baseSuggestions = [
-    { name: 'Check Symptoms', href: '/symptom-checker', icon: <Bot className="h-5 w-5 text-primary" /> },
-    { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" /> },
-    { name: 'Book an Appointment', href: '/book', icon: <Calendar className="h-5 w-5 text-primary" /> },
-    { name: 'Live Queue Status', href: '/queue', icon: <Users className="h-5 w-5 text-primary" /> },
+    { name: 'Check Symptoms', href: '/symptom-checker', icon: <Bot className="h-5 w-5 text-primary" />, external: false },
+    { name: 'Hospitals Nearby', href: 'https://www.google.com/maps/search/hospitals+near+me', icon: <MapPin className="h-5 w-5 text-primary" />, external: true },
+    { name: 'Call an Ambulance', href: 'tel:112', icon: <Siren className="h-5 w-5 text-primary" />, external: true },
+    { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" />, external: false },
 ];
 
 const floatingIcons = [
