@@ -112,11 +112,9 @@ export default function AiAssistantPage() {
 
       setAnalysis(result);
       
-      const botResponseText = `Based on my analysis, here is a summary: The urgency level appears to be **${result.emergencyLevel}**. Possible conditions include **${result.possibleConditions.join(', ')}**. I recommend consulting with a **${result.recommendedSpecialty}** specialist.`;
-
       const botResponse: Message = {
         sender: 'bot',
-        text: botResponseText,
+        text: result.detailedAnalysis,
       };
 
       setMessages(prev => [...prev.slice(0, -1), botResponse]);
