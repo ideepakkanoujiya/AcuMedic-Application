@@ -22,7 +22,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
   const urgencyBadgeVariant = () => {
-    if (!analysis) return 'default';
+    if (!analysis || !analysis.emergencyLevel) return 'default';
     switch (analysis.emergencyLevel.toLowerCase()) {
       case 'critical':
         return 'destructive';
@@ -32,6 +32,20 @@ const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
         return 'default';
     }
   };
+
+  if (!analysis.possibleConditions) {
+    // This is likely a general question response, not a symptom analysis
+    return (
+        <Card className="shadow-lg">
+            <CardHeader>
+                <CardTitle>AI Assistant Response</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="whitespace-pre-wrap">{analysis.response}</p>
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -77,7 +91,7 @@ const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
             <CardTitle>Next Steps</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {analysis.emergencyLevel.toLowerCase() === 'critical' ? (
+            {analysis.emergencyLevel && analysis.emergencyLevel.toLowerCase() === 'critical' ? (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>This is a potential emergency.</AlertTitle>
@@ -299,7 +313,13 @@ export default function SymptomCheckerPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {analysis ? (
+              {isLoading ? (
+                <Card className="flex flex-col items-center justify-center text-center py-12 px-6 min-h-[400px] shadow-lg">
+                    <Loader2 className="mx-auto h-16 w-16 text-primary animate-spin" />
+                    <h3 className="mt-6 text-xl font-semibold">Analyzing Symptoms...</h3>
+                    <p className="mt-2 text-muted-foreground max-w-sm">Our AI is processing your information. This may take a moment.</p>
+                </Card>
+              ) : analysis ? (
                 <NextSteps analysis={analysis} />
               ) : (
                 <Card className="flex flex-col items-center justify-center text-center py-12 px-6 min-h-[400px] shadow-lg">
