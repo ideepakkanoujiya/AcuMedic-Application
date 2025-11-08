@@ -1,16 +1,28 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, Stethoscope, Ambulance, Hospital, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+
+
+const suggestions = [
+    { name: 'Check Symptoms', href: '/ai-assistant', icon: <Bot className="h-5 w-5 text-primary" /> },
+    { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" /> },
+    { name: 'Nearby Hospitals', href: 'https://www.google.com/maps/search/nearby+hospitals', icon: <Hospital className="h-5 w-5 text-primary" />, external: true },
+    { name: 'Call an Ambulance', href: 'tel:112', icon: <Ambulance className="h-5 w-5 text-destructive" />, external: true },
+];
 
 export default function Hero() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,22 +61,39 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              whileHover={{ scale: 1.02 }}
             >
-               <form onSubmit={handleSearch} className="relative group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-                  <Input
-                    type="text"
-                    placeholder="Search symptoms, doctors or specialties..."
-                    className="pl-12 pr-4 py-3 h-14 text-base w-full rounded-full shadow-lg transition-all duration-300 focus-visible:shadow-2xl focus-visible:ring-primary/50 focus-visible:ring-2 bg-background/80 backdrop-blur-sm"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    aria-label="Search doctors or specialties"
-                  />
-                   <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10">
-                    Search
-                  </Button>
-                </form>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                   <form onSubmit={handleSearch} className="relative group" onClick={() => setPopoverOpen(true)}>
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+                      <Input
+                        type="text"
+                        placeholder="Search symptoms, doctors or specialties..."
+                        className="pl-12 pr-4 py-3 h-14 text-base w-full rounded-full shadow-lg transition-all duration-300 focus-visible:shadow-2xl focus-visible:ring-primary/50 focus-visible:ring-2 bg-background/80 backdrop-blur-sm"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        aria-label="Search doctors or specialties"
+                      />
+                       <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10">
+                        Search
+                      </Button>
+                    </form>
+                </PopoverTrigger>
+                <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[500px] md:w-[640px] p-4" align="center">
+                    <p className="text-sm font-medium text-muted-foreground mb-3 px-2">Suggestions</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {suggestions.map((item) => (
+                           <Link key={item.name} href={item.href} target={item.external ? '_blank' : '_self'} rel={item.external ? 'noopener noreferrer' : ''} className="block">
+                            <div className={cn("flex items-center gap-3 p-3 rounded-md hover:bg-muted transition-colors cursor-pointer", item.name.includes('Ambulance') && 'text-destructive hover:bg-destructive/10')}>
+                                {item.icon}
+                                <span className="font-medium text-sm">{item.name}</span>
+                            </div>
+                           </Link>
+                        ))}
+                    </div>
+                </PopoverContent>
+              </Popover>
+
                 <div className="mt-6 flex items-center justify-center gap-4">
                     <Button size="lg" className="w-full sm:w-auto" asChild>
                        <Link href="/ai-assistant">Start AI Symptom Check</Link>
