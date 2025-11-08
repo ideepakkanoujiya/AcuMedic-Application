@@ -12,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('symptom-checker');
   const [symptomInput, setSymptomInput] = useState('');
   const [reportInput, setReportInput] = useState('');
   const [whatsappInput, setWhatsappInput] = useState('');
@@ -64,7 +63,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">MediQ AI Dashboard</h1>
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs defaultValue="symptom-checker" className="w-full">
         <TabsList>
           <TabsTrigger value="symptom-checker">AI Symptom Checker</TabsTrigger>
           <TabsTrigger value="report-summarizer">
