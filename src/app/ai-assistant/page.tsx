@@ -68,6 +68,12 @@ export default function AiAssistantPage() {
   const { toast } = useToast();
 
   useEffect(() => {
+    setMessages([
+        { sender: 'bot', text: "Hello! I'm your AI Health Assistant. Please describe your symptoms. You can also upload an image if needed." }
+    ]);
+  }, []);
+
+  useEffect(() => {
     chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
   }, [messages]);
 
@@ -163,7 +169,6 @@ export default function AiAssistantPage() {
     <div className="grid lg:grid-cols-3 xl:grid-cols-4 h-[calc(100vh-4rem)]">
       <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-full bg-muted/20">
         <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
-          <ChatMessageBubble message={{ sender: 'bot', text: "Hello! I'm your AI Health Assistant. Please describe your symptoms. You can also upload an image if needed." }} />
           {messages.map((msg, index) => (
             <ChatMessageBubble key={index} message={msg} />
           ))}
