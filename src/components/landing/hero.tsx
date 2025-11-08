@@ -129,9 +129,8 @@ export default function Hero() {
             className="space-y-8"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter font-headline">
-              Your Health,
-              <br />
-              <span className="text-primary">Decoded.</span>
+              Instant care. Intelligent support
+              <br />— <span className="text-primary">anytime, anywhere</span>
             </h1>
             <p className="max-w-[600px] mx-auto text-lg text-muted-foreground">
               From instant AI-driven symptom analysis to seamless appointment booking, take control of your health journey with confidence.
