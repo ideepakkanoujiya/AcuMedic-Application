@@ -1,8 +1,18 @@
+'use client';
+
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
 
 export default function Footer({className}: {className?: string}) {
+  const pathname = usePathname();
+
+  if (pathname === '/ai-assistant') {
+    return null;
+  }
+
   return (
     <footer className={cn("border-t bg-background", className)}>
       <div className="container py-12">

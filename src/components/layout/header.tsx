@@ -1,3 +1,5 @@
+'use client';
+
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -10,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { href: "/ai-assistant", label: "AI Assistant" },
@@ -18,6 +21,12 @@ const navLinks = [
 ];
 
 export default function Header({className}: {className?: string}) {
+  const pathname = usePathname();
+
+  if (pathname === '/ai-assistant') {
+    return null;
+  }
+
   return (
     <header className={cn("sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
       <div className="container flex h-16 max-w-screen-2xl items-center">

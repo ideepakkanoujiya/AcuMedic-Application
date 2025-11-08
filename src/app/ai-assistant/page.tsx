@@ -14,8 +14,6 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
-import Header from '@/components/layout/header';
-import Footer from '@/components/layout/footer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface Message {
@@ -174,7 +172,6 @@ export default function AiAssistantPage() {
 
   return (
     <>
-    <Header className="hidden" />
     <div className="flex min-h-screen flex-col bg-background">
       <main className="flex-1 grid lg:grid-cols-3 xl:grid-cols-4">
         <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-screen bg-muted/20">
@@ -371,7 +368,6 @@ export default function AiAssistantPage() {
         </aside>
       </main>
     </div>
-    <Footer className="hidden" />
     </>
   );
 }
