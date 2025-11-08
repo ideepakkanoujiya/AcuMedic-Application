@@ -12,9 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, MapPin, Video, Star } from 'lucide-react';
+import { Search, MapPin, Video, Star, Clock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 const doctors = [
   {
@@ -25,6 +26,7 @@ const doctors = [
     fee: 500,
     consultType: ['clinic', 'video'],
     photoUrl: 'https://picsum.photos/seed/doc1/200/200',
+    availableSlots: ['09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM'],
   },
   {
     name: 'Dr. Ben Hanson',
@@ -34,6 +36,7 @@ const doctors = [
     fee: 450,
     consultType: ['video'],
     photoUrl: 'https://picsum.photos/seed/doc2/200/200',
+    availableSlots: ['10:00 AM', '10:30 AM', '03:00 PM'],
   },
   {
     name: 'Dr. Sarah Chen',
@@ -43,6 +46,7 @@ const doctors = [
     fee: 400,
     consultType: ['clinic', 'video'],
     photoUrl: 'https://picsum.photos/seed/doc3/200/200',
+    availableSlots: ['09:30 AM', '11:00 AM', '01:00 PM', '03:30 PM'],
   },
     {
     name: 'Dr. Marcus Rodriguez',
@@ -52,6 +56,7 @@ const doctors = [
     fee: 750,
     consultType: ['clinic'],
     photoUrl: 'https://picsum.photos/seed/doc4/200/200',
+    availableSlots: ['08:00 AM', '08:30 AM', '12:00 PM'],
   },
 ];
 
@@ -135,8 +140,8 @@ export default function DoctorsPage() {
       >
         {doctors.map((doctor, index) => (
           <motion.div key={index} variants={itemVariants}>
-            <Card className="h-full overflow-hidden hover:border-primary transition-all shadow-md">
-              <CardContent className="p-6 text-center">
+            <Card className="h-full flex flex-col overflow-hidden hover:border-primary transition-all shadow-md">
+              <CardContent className="p-6 text-center flex flex-col flex-grow">
                  <Image
                     src={doctor.photoUrl}
                     alt={`Photo of ${doctor.name}`}
@@ -158,9 +163,20 @@ export default function DoctorsPage() {
                     {doctor.consultType.includes('video') && <Video className="h-5 w-5 text-muted-foreground" title="Video Consult"/>}
                   </div>
                 </div>
-                 <Button className="w-full" asChild>
-                  <Link href="/book">Book Appointment</Link>
-                 </Button>
+
+                <div className="mt-auto space-y-4">
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2 flex items-center justify-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" /> Available Today</h4>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {doctor.availableSlots.slice(0, 4).map(slot => (
+                        <Badge key={slot} variant="outline" className="text-primary border-primary/30 bg-primary/5">{slot}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <Button className="w-full" asChild>
+                    <Link href="/book">Book Appointment</Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
