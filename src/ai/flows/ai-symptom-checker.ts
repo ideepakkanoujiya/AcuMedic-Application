@@ -54,7 +54,10 @@ Symptoms: {{{symptoms}}}
 {{#if language}}Language: {{{language}}}{{/if}}
 {{#if voiceInput}}Voice Input: {{{voiceInput}}}{{/if}}
 {{#if image}}
+Analyze the following image in conjunction with the symptoms.
 Image: {{media url=image}}
+{{else}}
+Analyze the symptoms provided.
 {{/if}}
 
 Respond with the emergency level (normal, urgent, or critical), a list of possible conditions, and the recommended medical specialty.
