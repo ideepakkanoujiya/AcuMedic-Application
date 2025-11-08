@@ -7,12 +7,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X, Loader2 } from 'lucide-react';
+import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X, Loader2, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link';
+import Header from '@/components/layout/header';
+import Footer from '@/components/layout/footer';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -109,9 +112,11 @@ export default function AiAssistantPage() {
 
       setAnalysis(result);
       
+      const botResponseText = `Based on my analysis, here is a summary: The urgency level appears to be **${result.emergencyLevel}**. Possible conditions include **${result.possibleConditions.join(', ')}**. I recommend consulting with a **${result.recommendedSpecialty}** specialist.`;
+
       const botResponse: Message = {
         sender: 'bot',
-        text: `Based on your symptoms, here is a summary: I've identified a possible emergency level of **${result.emergencyLevel}**. The possible conditions could be **${result.possibleConditions.join(', ')}**. I recommend consulting with a **${result.recommendedSpecialty}** specialist.`,
+        text: botResponseText,
       };
 
       // Replace the "Analyzing..." message with the actual response
@@ -158,7 +163,6 @@ export default function AiAssistantPage() {
     if (!analysis) return 'default';
     switch (analysis.emergencyLevel.toLowerCase()) {
       case 'critical':
-      case 'high urgency':
         return 'destructive';
       case 'urgent':
         return 'secondary';
@@ -168,6 +172,8 @@ export default function AiAssistantPage() {
   }, [analysis]);
 
   return (
+    <>
+    <Header className="hidden" />
     <div className="flex min-h-screen flex-col bg-background">
       <main className="flex-1 grid lg:grid-cols-3 xl:grid-cols-4">
         <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-screen bg-muted/20">
@@ -274,8 +280,30 @@ export default function AiAssistantPage() {
                 <CardTitle>Next Steps</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full">Find a Specialist</Button>
-                <Button variant="outline" className="w-full">Book a Video Consultation</Button>
+              {analysis.emergencyLevel.toLowerCase() === 'critical' ? (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>This is a potential emergency.</AlertTitle>
+                    <AlertDescription>
+                      Please call your local emergency number immediately.
+                    </AlertDescription>
+                    <Button asChild className="mt-4 w-full">
+                      <a href="tel:112">
+                        <Phone className="mr-2 h-4 w-4" />
+                        Call 112 Now
+                      </a>
+                    </Button>
+                  </Alert>
+                ) : (
+                  <>
+                    <Button className="w-full" asChild>
+                      <Link href={`/doctors?specialty=${analysis.recommendedSpecialty}`}>
+                        Find a Specialist
+                      </Link>
+                    </Button>
+                    <Button variant="outline" className="w-full">Book a Video Consultation</Button>
+                  </>
+                )}
               </CardContent>
             </Card>
             </>
@@ -290,5 +318,7 @@ export default function AiAssistantPage() {
         </aside>
       </main>
     </div>
+    <Footer className="hidden" />
+    </>
   );
 }
