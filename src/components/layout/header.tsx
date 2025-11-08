@@ -4,7 +4,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Globe, Check } from 'lucide-react';
+import { Menu, Globe, Check, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,14 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import { LanguageContext, languages } from '@/context/language-context';
+import { useUser, useAuth } from '@/firebase'; // Changed from useFirebase
+import { signOut } from 'firebase/auth';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/ui/avatar';
+
 
 const navLinks = [
   { href: "/symptom-checker", label: "Symptom Checker" },
@@ -26,9 +34,20 @@ const navLinks = [
 export default function Header({className}: {className?: string}) {
   const pathname = usePathname();
   const { language, setLanguage } = useContext(LanguageContext);
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
 
-  if (pathname === '/ai-assistant') {
-    return null;
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
 
   return (
@@ -37,6 +56,7 @@ export default function Header({className}: {className?: string}) {
         <Logo />
         <nav className="hidden md:flex items-center gap-6 ml-10">
           {navLinks.map(link => (
+             (link.href !== '/dashboard' || user) &&
             <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               {link.label}
             </Link>
@@ -61,12 +81,38 @@ export default function Header({className}: {className?: string}) {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="ghost" asChild>
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+          
+          {isUserLoading ? null : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                    <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+             <>
+              <Button variant="ghost" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+             </>
+          )}
+
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
@@ -80,6 +126,7 @@ export default function Header({className}: {className?: string}) {
                   <Logo />
                   <nav className="flex flex-col gap-4">
                   {navLinks.map(link => (
+                     (link.href !== '/dashboard' || user) &&
                     <Link key={link.href} href={link.href} className="text-lg font-medium text-foreground transition-colors hover:text-primary">
                       {link.label}
                     </Link>
