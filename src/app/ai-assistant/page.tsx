@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -80,6 +81,7 @@ export default function AiAssistantPage() {
   const handleSendMessage = async () => {
     if (input.trim() === '' && !imageFile) return;
     setIsLoading(true);
+    setAnalysis(null); // Clear previous analysis
 
     const userMessage: Message = { sender: 'user', text: input };
     if (imagePreview) {
@@ -93,11 +95,10 @@ export default function AiAssistantPage() {
     setInput('');
     setImageFile(null);
     setImagePreview(null);
-    setAnalysis(null);
-
+    
     // Initial bot thinking message
     setTimeout(() => {
-      setMessages(prev => [...prev, { sender: 'bot', text: 'I am analyzing your symptoms. Please wait a moment.' }]);
+      setMessages(prev => [...prev, { sender: 'bot', text: 'Analyzing your symptoms...' }]);
     }, 500);
 
     try {
@@ -113,6 +114,7 @@ export default function AiAssistantPage() {
         text: `Based on your symptoms, here is a summary: I've identified a possible emergency level of **${result.emergencyLevel}**. The possible conditions could be **${result.possibleConditions.join(', ')}**. I recommend consulting with a **${result.recommendedSpecialty}** specialist.`,
       };
 
+      // Replace the "Analyzing..." message with the actual response
       setMessages(prev => [...prev.slice(0, -1), botResponse]);
 
     } catch (error) {
@@ -166,7 +168,7 @@ export default function AiAssistantPage() {
   }, [analysis]);
 
   return (
-    <div className="grid lg:grid-cols-3 xl:grid-cols-4 h-[calc(100vh-4rem)]">
+    <div className="grid lg:grid-cols-3 xl:grid-cols-4 h-screen">
       <div className="lg:col-span-2 xl:col-span-3 flex flex-col h-full bg-muted/20">
         <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
           {messages.map((msg, index) => (
