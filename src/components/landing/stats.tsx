@@ -1,23 +1,38 @@
+"use client";
+
+import { CheckCircle2, Clock, CalendarDays } from 'lucide-react';
+import { motion } from 'framer-motion';
+
 const stats = [
-  { value: "10,000+", label: "Patients Helped" },
-  { value: "98%", label: "Triage Accuracy" },
-  { value: "200+", label: "Specialists Online" },
-  { value: "24/7", label: "Service Availability" },
+  { value: "152 Doctors Online", icon: <CheckCircle2 className="h-5 w-5 text-green-400" /> },
+  { value: "Avg Wait 12m", icon: <Clock className="h-5 w-5 text-yellow-400" /> },
+  { value: "341 Appointments Today", icon: <CalendarDays className="h-5 w-5 text-blue-400" /> },
 ];
 
 export default function Stats() {
   return (
-    <section className="bg-muted/50 dark:bg-muted/20 py-12 sm:py-16">
-      <div className="container">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <motion.section 
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true }}
+      className="bg-muted/30 dark:bg-muted/20 border-y">
+      <div className="container py-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
           {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary">{stat.value}</h3>
-              <p className="text-sm sm:text-base text-muted-foreground mt-2">{stat.label}</p>
-            </div>
+            <motion.div 
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="flex items-center justify-center gap-2">
+              {stat.icon}
+              <p className="text-sm sm:text-base text-muted-foreground font-medium">{stat.value}</p>
+            </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
