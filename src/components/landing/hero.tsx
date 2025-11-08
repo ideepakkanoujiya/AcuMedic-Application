@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -27,23 +26,16 @@ const floatingIcons = [
 ];
 
 export default function Hero() {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [popoverOpen, setPopoverOpen] = useState(false);
-
+  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
       window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
+      setPopoverOpen(false);
     }
   };
-  
-  const handleInternalSearch = (e: React.FormEvent) => {
-     e.preventDefault();
-    if (searchTerm.trim()) {
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
-    }
-  }
 
   const dynamicSuggestions = searchTerm.trim()
     ? [
@@ -108,7 +100,7 @@ export default function Hero() {
             >
               <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild>
-                   <form onSubmit={handleInternalSearch} className="relative group" onFocus={() => setPopoverOpen(true)}>
+                   <form onSubmit={handleSearch} className="relative group">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                       <Input
                         type="text"
@@ -116,6 +108,7 @@ export default function Hero() {
                         className="pl-12 pr-4 py-3 h-14 text-base w-full rounded-full shadow-lg transition-all duration-300 focus-visible:shadow-2xl focus-visible:ring-primary/50 focus-visible:ring-2 bg-background/80 backdrop-blur-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onFocus={() => setPopoverOpen(true)}
                         aria-label="Search doctors or specialties"
                       />
                        <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10">
