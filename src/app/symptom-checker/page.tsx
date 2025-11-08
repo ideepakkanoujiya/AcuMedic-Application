@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LanguageContext } from '@/context/language-context';
+import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 
 const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
@@ -113,7 +114,7 @@ const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
                         <Button variant="outline" className="w-full justify-start h-auto py-2">
                             <div className="flex items-center gap-3">
                               <Avatar>
-                                <AvatarImage src="https://picsum.photos/seed/doc1/200/200" />
+                                <AvatarImage src={getPlaceholderImage('doctor-female-1')?.imageUrl} />
                                 <AvatarFallback>DC</AvatarFallback>
                               </Avatar>
                               <div>
@@ -125,8 +126,8 @@ const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
                          <Button variant="outline" className="w-full justify-start h-auto py-2">
                             <div className="flex items-center gap-3">
                               <Avatar>
-                                <AvatarImage src="https://picsum.photos/seed/doc5/200/200" />
-                                <AvatarFallback>DP</AvatarFallback>
+                                <AvatarImage src={getPlaceholderImage('doctor-female-3')?.imageUrl} />
+                                <AvatarFallback>PS</AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="font-semibold text-left">Dr. Priya Sharma</p>

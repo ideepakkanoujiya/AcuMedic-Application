@@ -16,6 +16,7 @@ import { Search, MapPin, Video, Star, Clock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 const doctors = [
   {
@@ -25,7 +26,8 @@ const doctors = [
     rating: 4.9,
     fee: 500,
     consultType: ['clinic', 'video'],
-    photoUrl: 'https://picsum.photos/seed/doc1/200/200',
+    photoUrl: getPlaceholderImage('doctor-female-1')?.imageUrl || '',
+    photoHint: getPlaceholderImage('doctor-female-1')?.imageHint || 'doctor professional',
     availableSlots: ['09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM'],
   },
   {
@@ -35,7 +37,8 @@ const doctors = [
     rating: 4.8,
     fee: 450,
     consultType: ['video'],
-    photoUrl: 'https://picsum.photos/seed/doc2/200/200',
+    photoUrl: getPlaceholderImage('doctor-male-1')?.imageUrl || '',
+    photoHint: getPlaceholderImage('doctor-male-1')?.imageHint || 'doctor professional',
     availableSlots: ['10:00 AM', '10:30 AM', '03:00 PM'],
   },
   {
@@ -45,7 +48,8 @@ const doctors = [
     rating: 4.9,
     fee: 400,
     consultType: ['clinic', 'video'],
-    photoUrl: 'https://picsum.photos/seed/doc3/200/200',
+    photoUrl: getPlaceholderImage('doctor-female-2')?.imageUrl || '',
+    photoHint: getPlaceholderImage('doctor-female-2')?.imageHint || 'doctor smiling',
     availableSlots: ['09:30 AM', '11:00 AM', '01:00 PM', '03:30 PM'],
   },
     {
@@ -55,7 +59,8 @@ const doctors = [
     rating: 4.7,
     fee: 750,
     consultType: ['clinic'],
-    photoUrl: 'https://picsum.photos/seed/doc4/200/200',
+    photoUrl: getPlaceholderImage('doctor-male-2')?.imageUrl || '',
+    photoHint: getPlaceholderImage('doctor-male-2')?.imageHint || 'doctor portrait',
     availableSlots: ['08:00 AM', '08:30 AM', '12:00 PM'],
   },
 ];
@@ -147,6 +152,7 @@ export default function DoctorsPage() {
                     alt={`Photo of ${doctor.name}`}
                     width={100}
                     height={100}
+                    data-ai-hint={doctor.photoHint}
                     className="rounded-full mx-auto mb-4 border-4 border-muted"
                  />
                 <h3 className="text-xl font-bold font-headline">{doctor.name}</h3>

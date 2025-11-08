@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 const timeSlots = [
   '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
@@ -37,7 +38,7 @@ export default function BookingPage() {
   const doctor = {
     name: 'Dr. Emily Carter',
     specialty: 'Cardiologist',
-    photoUrl: 'https://picsum.photos/seed/doc1/200/200',
+    photoUrl: getPlaceholderImage('doctor-female-1')?.imageUrl || 'https://picsum.photos/seed/doc1/200/200',
   };
 
   const handleNextStep = () => {

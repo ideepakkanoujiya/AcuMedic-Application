@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Clock, User } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
+import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 export default function QueuePage() {
     const [queuePosition, setQueuePosition] = useState(3);
@@ -24,7 +25,7 @@ export default function QueuePage() {
     const doctor = {
         name: 'Dr. Emily Carter',
         specialty: 'Cardiologist',
-        photoUrl: 'https://picsum.photos/seed/doc1/200/200',
+        photoUrl: getPlaceholderImage('doctor-female-1')?.imageUrl || 'https://picsum.photos/seed/doc1/200/200',
     };
 
     return (

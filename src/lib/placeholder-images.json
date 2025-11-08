@@ -5,6 +5,36 @@
       "description": "A friendly doctor interacting with a patient on a tablet, symbolizing modern healthcare.",
       "imageUrl": "https://images.unsplash.com/photo-1612888077748-00e3a1bd7aad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmdXR1cmlzdGljJTIwbWVkaWNhbHxlbnwwfHx8fDE3NjI2MjM5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "futuristic medical"
+    },
+    {
+      "id": "doctor-female-1",
+      "description": "Stock photo of a friendly female doctor.",
+      "imageUrl": "https://images.unsplash.com/photo-1758691461935-202e2ef6b69f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkb2N0b3IlMjBwcm9mZXNzaW9uYWx8ZW58MHx8fHwxNzYyNjI3OTYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor professional"
+    },
+    {
+      "id": "doctor-male-1",
+      "description": "Stock photo of a friendly male doctor.",
+      "imageUrl": "https://images.unsplash.com/photo-1755189118414-14c8dacdb082?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkb2N0b3IlMjBwcm9mZXNzaW9uYWx8ZW58MHx8fHwxNzYyNjI3OTYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor professional"
+    },
+    {
+      "id": "doctor-female-2",
+      "description": "Stock photo of another friendly female doctor.",
+      "imageUrl": "https://images.unsplash.com/photo-1605269196330-7a4ef37dbcfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZG9jdG9yJTIwc21pbGluZ3xlbnwwfHx8fDE3NjI1MTg0OTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor smiling"
+    },
+    {
+      "id": "doctor-male-2",
+      "description": "Stock photo of another friendly male doctor.",
+      "imageUrl": "https://images.unsplash.com/photo-1594824476967-48c8b964273f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI1NjI3NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor portrait"
+    },
+    {
+      "id": "doctor-female-3",
+      "description": "Stock photo of a third friendly female doctor.",
+      "imageUrl": "https://images.unsplash.com/photo-1659353888922-7c7b1ad21650?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZG9jdG9yJTIwZnJpZW5kbHl8ZW58MHx8fHwxNzYyNTQ3MzI3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor friendly"
     }
   ]
 }
