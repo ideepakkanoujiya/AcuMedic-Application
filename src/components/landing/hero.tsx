@@ -41,9 +41,7 @@ export default function Hero() {
   const handleInternalSearch = (e: React.FormEvent) => {
      e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`/doctors?search=${encodeURIComponent(searchTerm)}`);
-    } else {
-      router.push('/doctors');
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
     }
   }
 
