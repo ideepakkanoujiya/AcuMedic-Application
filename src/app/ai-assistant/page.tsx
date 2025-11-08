@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -63,6 +65,7 @@ export default function AiAssistantPage() {
   const [analysis, setAnalysis] = useState<AISymptomCheckerOutput | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
@@ -108,6 +111,11 @@ export default function AiAssistantPage() {
 
     } catch (error) {
       console.error("Error calling AI symptom checker:", error);
+       toast({
+        variant: "destructive",
+        title: "AI Analysis Failed",
+        description: "I'm sorry, but I was unable to analyze your symptoms. Please try again.",
+      });
       const errorResponse: Message = {
         sender: 'bot',
         text: 'I am sorry, but I was unable to analyze your symptoms. Please try again.',
@@ -138,7 +146,7 @@ export default function AiAssistantPage() {
     }
   }
 
-  const getUrgencyBadgeVariant = () => {
+  const urgencyBadgeVariant = useMemo(() => {
     if (!analysis) return 'default';
     switch (analysis.emergencyLevel.toLowerCase()) {
       case 'critical':
@@ -149,7 +157,7 @@ export default function AiAssistantPage() {
       default:
         return 'default';
     }
-  }
+  }, [analysis]);
 
   return (
     <div className="grid lg:grid-cols-3 xl:grid-cols-4 h-[calc(100vh-4rem)]">
@@ -223,12 +231,12 @@ export default function AiAssistantPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertCircle className={cn("h-6 w-6", getUrgencyBadgeVariant() === 'destructive' ? 'text-destructive': 'text-yellow-500')} />
+                <AlertCircle className={cn("h-6 w-6", urgencyBadgeVariant === 'destructive' ? 'text-destructive': 'text-yellow-500')} />
                 Urgency Warning
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Badge variant={getUrgencyBadgeVariant()} className="text-base capitalize">{analysis.emergencyLevel}</Badge>
+              <Badge variant={urgencyBadgeVariant} className="text-base capitalize">{analysis.emergencyLevel}</Badge>
               <p className="text-muted-foreground mt-2 text-sm">Based on the provided symptoms, please consider the recommended next steps.</p>
             </CardContent>
           </Card>
