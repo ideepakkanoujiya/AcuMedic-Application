@@ -1,0 +1,424 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the system (patient, doctor, or admin).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the user (patient, doctor, or admin)."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone number of the user."
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "firstName",
+        "lastName",
+        "email"
+      ]
+    },
+    "DoctorProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DoctorProfile",
+      "type": "object",
+      "description": "Represents the profile information for a doctor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the DoctorProfile entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:1 DoctorProfile)"
+        },
+        "specialty": {
+          "type": "string",
+          "description": "The medical specialty of the doctor (e.g., cardiology, dermatology)."
+        },
+        "clinics": {
+          "type": "array",
+          "description": "List of clinics where the doctor is available.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "teleconsultEnabled": {
+          "type": "boolean",
+          "description": "Indicates whether the doctor is available for teleconsultation."
+        },
+        "ratings": {
+          "type": "number",
+          "description": "The average rating of the doctor."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "specialty",
+        "teleconsultEnabled"
+      ]
+    },
+    "Appointment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Appointment",
+      "type": "object",
+      "description": "Represents an appointment scheduled between a patient and a doctor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Appointment entity."
+        },
+        "patientId": {
+          "type": "string",
+          "description": "Reference to User (patient). (Relationship: User 1:N Appointment)"
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "Reference to User (doctor). (Relationship: User 1:N Appointment)"
+        },
+        "slot": {
+          "type": "string",
+          "description": "The date and time slot for the appointment."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the appointment (e.g., scheduled, completed, cancelled)."
+        },
+        "consultType": {
+          "type": "string",
+          "description": "The type of consultation (in-clinic or teleconsult)."
+        }
+      },
+      "required": [
+        "id",
+        "patientId",
+        "doctorId",
+        "slot",
+        "status",
+        "consultType"
+      ]
+    },
+    "QueueToken": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "QueueToken",
+      "type": "object",
+      "description": "Represents a patient's position in the queue for a doctor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the QueueToken entity."
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "Reference to User (doctor). (Relationship: User 1:N QueueToken)"
+        },
+        "patientId": {
+          "type": "string",
+          "description": "Reference to User (patient). (Relationship: User 1:N QueueToken)"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the queue token (e.g., waiting, in session, complete)."
+        },
+        "eta": {
+          "type": "number",
+          "description": "The estimated time of arrival for the patient to be seen."
+        },
+        "priority": {
+          "type": "number",
+          "description": "The priority of the patient in the queue."
+        }
+      },
+      "required": [
+        "id",
+        "doctorId",
+        "patientId",
+        "status",
+        "eta",
+        "priority"
+      ]
+    },
+    "PatientReport": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PatientReport",
+      "type": "object",
+      "description": "Represents a medical report uploaded by a doctor for a patient.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PatientReport entity."
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "Reference to User (doctor). (Relationship: User 1:N PatientReport)"
+        },
+        "patientId": {
+          "type": "string",
+          "description": "Reference to User (patient). (Relationship: User 1:N PatientReport)"
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "The URL of the uploaded medical report file."
+        },
+        "uploadedAt": {
+          "type": "string",
+          "description": "The date and time when the report was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "doctorId",
+        "patientId",
+        "fileUrl",
+        "uploadedAt"
+      ]
+    },
+    "Reminder": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reminder",
+      "type": "object",
+      "description": "Represents a reminder for preventive care or follow-ups.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Reminder entity."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of reminder (e.g., lab test, vaccination, annual checkup)."
+        },
+        "patientId": {
+          "type": "string",
+          "description": "Reference to User (patient). (Relationship: User 1:N Reminder)"
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "The date when the reminder is due.",
+          "format": "date-time"
+        },
+        "sentVia": {
+          "type": "string",
+          "description": "The channel through which the reminder was sent (e.g., WhatsApp, email, SMS)."
+        },
+        "sentStatus": {
+          "type": "string",
+          "description": "The status of the reminder (e.g., sent, delivered, failed)."
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "patientId",
+        "dueDate",
+        "sentVia",
+        "sentStatus"
+      ]
+    },
+    "VideoSession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "VideoSession",
+      "type": "object",
+      "description": "Represents a video consultation session.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the VideoSession entity."
+        },
+        "appointmentId": {
+          "type": "string",
+          "description": "Reference to Appointment. (Relationship: Appointment 1:1 VideoSession)"
+        },
+        "roomUrl": {
+          "type": "string",
+          "description": "The URL for the video consultation room."
+        },
+        "expiresAt": {
+          "type": "string",
+          "description": "The date and time when the video session link expires.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "appointmentId",
+        "roomUrl",
+        "expiresAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles.  Uses path-based ownership. (userId in path refers to request.auth.uid).",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/doctor_profiles/{doctorId}",
+        "definition": {
+          "entityName": "DoctorProfile",
+          "schema": {
+            "$ref": "#/backend/entities/DoctorProfile"
+          },
+          "description": "Stores doctor profiles. The document ID represents the doctor's User ID.",
+          "params": [
+            {
+              "name": "doctorId",
+              "description": "The unique identifier of the doctor."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{patientId}/appointments/{appointmentId}",
+        "definition": {
+          "entityName": "Appointment",
+          "schema": {
+            "$ref": "#/backend/entities/Appointment"
+          },
+          "description": "Stores appointments for a specific patient. Uses path-based ownership; patientId in path refers to the appointment's patientId.",
+          "params": [
+            {
+              "name": "patientId",
+              "description": "The unique identifier of the patient."
+            },
+            {
+              "name": "appointmentId",
+              "description": "The unique identifier of the appointment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/queue_tokens/{queueTokenId}",
+        "definition": {
+          "entityName": "QueueToken",
+          "schema": {
+            "$ref": "#/backend/entities/QueueToken"
+          },
+          "description": "Stores queue tokens.  This structure needs explicit rules to allow doctors to read and modify queue tokens and patients to read their own queue token status.",
+          "params": [
+            {
+              "name": "queueTokenId",
+              "description": "The unique identifier of the queue token."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{patientId}/patient_reports/{patientReportId}",
+        "definition": {
+          "entityName": "PatientReport",
+          "schema": {
+            "$ref": "#/backend/entities/PatientReport"
+          },
+          "description": "Stores patient reports. Uses path-based ownership; the patientId in the path is the patient who owns the report.",
+          "params": [
+            {
+              "name": "patientId",
+              "description": "The unique identifier of the patient."
+            },
+            {
+              "name": "patientReportId",
+              "description": "The unique identifier of the patient report."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{patientId}/reminders/{reminderId}",
+        "definition": {
+          "entityName": "Reminder",
+          "schema": {
+            "$ref": "#/backend/entities/Reminder"
+          },
+          "description": "Stores reminders for a specific patient. Uses path-based ownership; patientId in path refers to the reminder's patientId.",
+          "params": [
+            {
+              "name": "patientId",
+              "description": "The unique identifier of the patient."
+            },
+            {
+              "name": "reminderId",
+              "description": "The unique identifier of the reminder."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/video_sessions/{videoSessionId}",
+        "definition": {
+          "entityName": "VideoSession",
+          "schema": {
+            "$ref": "#/backend/entities/VideoSession"
+          },
+          "description": "Stores video sessions.",
+          "params": [
+            {
+              "name": "videoSessionId",
+              "description": "The unique identifier of the video session."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "adminRole",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Collection to store admin users. Document ID is the user ID. Existence of document grants admin privileges.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to ensure security, scalability, and debuggability, adhering to the core design principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). It leverages Structural Segregation (Homogeneous Security Posture), Access Modeling (Standardization and Consistency), and Data Clarity and Predictability.\n\n**Authorization Independence:**  Critical user and role data are denormalized where necessary to eliminate `get()` calls in security rules.  For example, access to a patient's reports is based on the presence of the user's ID in the `patientId` of the `PatientReport` document itself. Also, access to `DoctorProfile` is secured under the user's document, which allows us to prevent `get()` calls.\n\n**Structural Segregation:**  The structure separates different types of data into distinct collections based on their security requirements.  For instance, user profiles are stored under `/users/{userId}`, enforcing path-based ownership.  There is no data mixing in collections.\n\n**Access Modeling:**\n*   **Private Data:** User data (profiles) uses path-based ownership under `/users/{userId}`.\n*   **Hierarchical Paths:** Entities that represent a `User 1:N Entity` relationship (e.g., a `User` has many `Appointments`, `PatientReports`, and `Reminders`) implement a path-based ownership like `/users/{userId}/appointments/{appointmentId}`. This structure is highly secure and makes ownership-based security rules simple and efficient.\n*   **Global Roles (DBAC):** Utilizes existence checks in dedicated collections for admin roles (e.g., `/roles_admin/{uid}`) instead of custom claims.\n\n**QAPs (Rules are not Filters):** The data structure enables secure `list` operations by segregating data and using denormalization, preventing the need to filter based on data content in rules.\n\n**Invariants:**  The data structure helps maintain the integrity of ownership (using explicit `ownerId` fields or path-based ownership), timestamps (with `uploadedAt` in `PatientReport`), and denormalized data (replicating authorization data to avoid `get()` calls).\n\nThis structure facilitates simple, robust, and easily debuggable security rules, minimizing complexity and ensuring security."
+  }
+}

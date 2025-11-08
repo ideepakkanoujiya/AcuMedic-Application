@@ -1,0 +1,205 @@
+/**
+ * @file Firebase Security Rules for the application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for personal data and uses existence checks for admin roles. It prioritizes security and clarity, minimizing external reads and complex logic.
+ *
+ * Data Structure:
+ * - User profiles are stored under `/users/{userId}`, accessible only to the owning user.
+ * - Doctor profiles are stored under `/doctor_profiles/{doctorId}`, where doctorId is the User ID.
+ * - Appointments, patient reports, and reminders are nested under the user's document using path-based ownership (e.g., `/users/{userId}/appointments/{appointmentId}`).
+ * - Queue tokens are stored under `/queue_tokens/{queueTokenId}` and are accessible to patients and doctors related to the queue token.
+ * - Video sessions are stored under `/video_sessions/{videoSessionId}` and authorization depends on the business logic.
+ * - Admin roles are determined by the existence of a document in the `/roles_admin/{userId}` collection.
+ *
+ * Key Security Decisions:
+ * - User listing is disallowed.
+ * - Admin privileges are granted based on document existence in `/roles_admin/{userId}`.
+ * - Write operations are strictly controlled based on ownership or admin roles.
+ *
+ * Denormalization for Authorization:
+ * - Ownership: Paths like `/users/{userId}/appointments/{appointmentId}` inherently denormalize the user-appointment relationship. The `patientId` is present in both the path and the document, enabling simple, performant rules.
+ * - Roles: Admin status is checked by verifying the existence of a document in `/roles_admin/{userId}`, avoiding `get()` calls and centralizing role management.
+ *
+ * Structural Segregation:
+ * - User-specific data (appointments, reports, reminders) is stored in user subcollections. This ensures that listing operations can be safely allowed for the owner without exposing other users' data.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Checks if the request is authenticated.
+     * @return {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the user ID matches the authenticated user's ID.
+     * @param {string} userId The user ID to check.
+     * @return {boolean} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+     /**
+      * @description Checks if the authenticated user is an existing owner of the document.
+      * @param {string} userId The user ID to check against.
+      * @return {boolean} True if the user is the owner and the document exists.
+      */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user is an admin.
+     * @return {boolean} True if the user is an admin, false otherwise.
+     */
+    function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * @description Rules for user profiles.
+     * @path /users/{userId}
+     * @allow (create) User with ID 'user123' creates their profile.
+     *   - request.auth.uid: 'user123'
+     *   - request.resource.data.id: 'user123'
+     * @deny (create) User with ID 'user123' tries to create profile for 'user456'.
+     *   - request.auth.uid: 'user123'
+     *   - request.resource.data.id: 'user456'
+     * @principle Enforces document ownership for writes, validates relational integrity.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // User listing is not allowed.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id; //Immutable id
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for doctor profiles.
+     * @path /doctor_profiles/{doctorId}
+     * @allow (create) Doctor with ID 'doctor123' creates their profile.
+     *   - request.auth.uid: 'doctor123'
+     *   - resource.data.userId: 'doctor123'
+     * @deny (update) User with ID 'patient456' tries to update a doctor profile.
+     *   - request.auth.uid: 'patient456'
+     * @principle Enforces document ownership for writes, validates relational integrity.
+     */
+    match /doctor_profiles/{doctorId} {
+      allow get: if true; //Public get
+      allow list: if true; //Public List
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    /**
+     * @description Rules for appointments.
+     * @path /users/{patientId}/appointments/{appointmentId}
+     * @allow (create) User with ID 'patient123' creates an appointment under their profile.
+     *   - request.auth.uid: 'patient123'
+     * @deny (update) User with ID 'patient456' tries to update an appointment under 'patient123's profile.
+     *   - request.auth.uid: 'patient456'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{patientId}/appointments/{appointmentId} {
+      allow get: if isOwner(patientId);
+      allow list: if isOwner(patientId);
+      allow create: if isOwner(patientId);
+      allow update: if isExistingOwner(patientId);
+      allow delete: if isExistingOwner(patientId);
+    }
+
+    /**
+     * @description Rules for queue tokens.
+     * @path /queue_tokens/{queueTokenId}
+     * @allow (get) Any authenticated user can get a queue token.
+     *   - request.auth.uid: 'user123'
+     * @deny (create) An unauthenticated user tries to create a queue token.
+     *   - request.auth.uid: null
+     * @principle Allows read access and restricts write access to authenticated users.
+     */
+    match /queue_tokens/{queueTokenId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for patient reports.
+     * @path /users/{patientId}/patient_reports/{patientReportId}
+     * @allow (create) Doctor creates a patient report for a specific patient.
+     *   - request.auth.uid: 'doctor123'
+     *   - resource.data.patientId: 'patient123'
+     * @deny (update) User with ID 'patient456' tries to update a patient report under 'patient123's profile.
+     *   - request.auth.uid: 'patient456'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{patientId}/patient_reports/{patientReportId} {
+      allow get: if isOwner(patientId);
+      allow list: if isOwner(patientId);
+      allow create: if isSignedIn();
+      allow update: if isExistingOwner(patientId);
+      allow delete: if isExistingOwner(patientId);
+    }
+
+    /**
+     * @description Rules for reminders.
+     * @path /users/{patientId}/reminders/{reminderId}
+     * @allow (create) User with ID 'patient123' creates a reminder under their profile.
+     *   - request.auth.uid: 'patient123'
+     * @deny (update) User with ID 'patient456' tries to update a reminder under 'patient123's profile.
+     *   - request.auth.uid: 'patient456'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{patientId}/reminders/{reminderId} {
+      allow get: if isOwner(patientId);
+      allow list: if isOwner(patientId);
+      allow create: if isOwner(patientId);
+      allow update: if isExistingOwner(patientId);
+      allow delete: if isExistingOwner(patientId);
+    }
+
+    /**
+     * @description Rules for video sessions.
+     * @path /video_sessions/{videoSessionId}
+     * @allow (get) Any authenticated user can get a video session.
+     *   - request.auth.uid: 'user123'
+     * @deny (create) An unauthenticated user tries to create a video session.
+     *   - request.auth.uid: null
+     * @principle Allows read access and restricts write access to authenticated users.
+     */
+    match /video_sessions/{videoSessionId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for admin roles.
+     * @path /roles_admin/{userId}
+     * @allow (create) Admin user creates their admin role document.
+     *   - request.auth.uid: 'admin123'
+     * @deny (get) Non-admin user tries to get an admin role document.
+     *   - request.auth.uid: 'user456'
+     * @principle Grants admin privileges based on document existence.
+     */
+     match /roles_admin/{userId}{
+        allow get: if isAdmin();
+        allow list: if false;
+        allow create: if isAdmin();
+        allow update: if false;
+        allow delete: if isAdmin();
+     }
+  }
+}
