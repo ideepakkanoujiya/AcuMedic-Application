@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Search, MapPin, Video, Star } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const doctors = [
   {
@@ -158,7 +159,7 @@ export default function DoctorsPage() {
                   </div>
                 </div>
                  <Button className="w-full" asChild>
-                  <a href="/book">Book Appointment</a>
+                  <Link href="/book">Book Appointment</Link>
                  </Button>
               </CardContent>
             </Card>

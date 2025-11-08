@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X, Loader2, Phone } from 'lucide-react';
+import { AlertCircle, Bot, ImagePlus, Mic, Send, User, X, Loader2, Phone, Calendar, Video } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -276,36 +277,88 @@ export default function AiAssistantPage() {
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Next Steps</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-              {analysis.emergencyLevel.toLowerCase() === 'critical' ? (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>This is a potential emergency.</AlertTitle>
-                    <AlertDescription>
-                      Please call your local emergency number immediately.
-                    </AlertDescription>
-                    <Button asChild className="mt-4 w-full">
-                      <a href="tel:112">
-                        <Phone className="mr-2 h-4 w-4" />
-                        Call 112 Now
-                      </a>
-                    </Button>
-                  </Alert>
-                ) : (
-                  <>
-                    <Button className="w-full" asChild>
-                      <Link href={`/doctors?specialty=${analysis.recommendedSpecialty}`}>
-                        Find a Specialist
-                      </Link>
-                    </Button>
-                    <Button variant="outline" className="w-full">Book a Video Consultation</Button>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                <CardHeader>
+                  <CardTitle>Next Steps</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {analysis.emergencyLevel.toLowerCase() === 'critical' ? (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>This is a potential emergency.</AlertTitle>
+                      <AlertDescription>
+                        Please call your local emergency number immediately.
+                      </AlertDescription>
+                      <Button asChild className="mt-4 w-full">
+                        <a href="tel:112">
+                          <Phone className="mr-2 h-4 w-4" />
+                          Call 112 Now
+                        </a>
+                      </Button>
+                    </Alert>
+                  ) : (
+                    <>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                           <Button className="w-full">
+                              <Calendar className="mr-2 h-4 w-4" />
+                              Book an Appointment
+                           </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Book an Appointment</DialogTitle>
+                          </DialogHeader>
+                          <div className="py-4">
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Based on your symptoms, we recommend a <span className="font-bold">{analysis.recommendedSpecialty}</span>. 
+                              Please select a doctor to proceed.
+                            </p>
+                            <div className="space-y-2">
+                              {/* This would be dynamically populated */}
+                              <Button variant="outline" className="w-full justify-start h-auto py-2">
+                                  <div className="flex items-center gap-3">
+                                    <Avatar>
+                                      <AvatarImage src="https://picsum.photos/seed/doc1/200/200" />
+                                      <AvatarFallback>DC</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                      <p className="font-semibold text-left">Dr. Emily Carter</p>
+                                      <p className="text-xs text-muted-foreground text-left">{analysis.recommendedSpecialty}</p>
+                                    </div>
+                                  </div>
+                              </Button>
+                               <Button variant="outline" className="w-full justify-start h-auto py-2">
+                                  <div className="flex items-center gap-3">
+                                    <Avatar>
+                                      <AvatarImage src="https://picsum.photos/seed/doc5/200/200" />
+                                      <AvatarFallback>DP</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                      <p className="font-semibold text-left">Dr. Priya Sharma</p>
+                                      <p className="text-xs text-muted-foreground text-left">{analysis.recommendedSpecialty}</p>
+                                    </div>
+                                  </div>
+                              </Button>
+                            </div>
+                            <Button asChild className="w-full mt-4">
+                              <Link href="/book">
+                                Continue to Booking
+                              </Link>
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+
+                       <Button variant="outline" className="w-full" asChild>
+                         <Link href={`/doctors?specialty=${analysis.recommendedSpecialty}`}>
+                          <Video className="mr-2 h-4 w-4" />
+                          Book a Video Consultation
+                         </Link>
+                       </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
             </>
             ) : (
                <div className="text-center py-12 text-muted-foreground">
