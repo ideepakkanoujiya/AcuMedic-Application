@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Bot, Mic, Send, User, Loader2 } from 'lucide-react';
 import { aiSymptomChecker } from '@/ai/flows/ai-symptom-checker';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
 
 interface Message {
   id: string;
@@ -30,7 +29,7 @@ const ChatMessageBubble = ({ message }: { message: Message }) => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className={`max-w-xs md:max-w-md rounded-xl p-3 ${
+        className={`max-w-xs md:max-w-2xl rounded-xl p-3 ${
           isUser
             ? 'bg-primary text-primary-foreground'
             : 'bg-muted'
@@ -58,7 +57,7 @@ export default function AiAssistantPage() {
 
   useEffect(() => {
     setMessages([
-        { id: 'initial-1', sender: 'bot', text: "Hello! I'm your conversational AI Health Assistant." },
+        { id: 'initial-1', sender: 'bot', text: "Hello! I'm your conversational AI Health Assistant, AcuMedic." },
         { id: 'initial-2', sender: 'bot', text: "You can ask me to check your symptoms, define medical terms, or help you find a specialist. How can I help you today?" }
     ]);
   }, []);
@@ -86,24 +85,11 @@ export default function AiAssistantPage() {
       const result = await aiSymptomChecker({
         symptoms: currentInput,
       });
-
-      let responseText = result.detailedAnalysis;
-
-      if (result.possibleConditions && result.possibleConditions.length > 0) {
-        responseText += `\n\n**Possible conditions:** ${result.possibleConditions.join(', ')}.`;
-      }
-      if (result.recommendedSpecialty) {
-        responseText += `\n\nI recommend consulting a **${result.recommendedSpecialty}**.`;
-      }
-       if (result.emergencyLevel.toLowerCase() === 'critical') {
-        responseText += `\n\n**This could be a critical situation. Please consider seeking emergency medical help immediately.**`;
-      }
-
-
+      
       const botResponse: Message = {
         id: (Date.now() + 2).toString(),
         sender: 'bot',
-        text: responseText,
+        text: result.response,
       };
 
       setMessages(prev => prev.map(m => m.id === thinkingMessage.id ? botResponse : m));
