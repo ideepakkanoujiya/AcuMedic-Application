@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 
 
 const baseSuggestions = [
-    { name: 'Check Symptoms', href: '/ai-assistant', icon: <Bot className="h-5 w-5 text-primary" /> },
+    { name: 'Check Symptoms', href: '/symptom-checker', icon: <Bot className="h-5 w-5 text-primary" /> },
     { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" /> },
     { name: 'Book an Appointment', href: '/book', icon: <Calendar className="h-5 w-5 text-primary" /> },
     { name: 'Live Queue Status', href: '/queue', icon: <Users className="h-5 w-5 text-primary" /> },
@@ -144,7 +144,7 @@ export default function Hero() {
                       className="w-full sm:w-auto bg-gradient-to-r from-primary to-blue-400 text-white shadow-lg hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105" 
                       asChild
                     >
-                       <Link href="/ai-assistant">Start AI Symptom Check</Link>
+                       <Link href="/symptom-checker">Start AI Symptom Check</Link>
                     </Button>
                 </div>
             </motion.div>

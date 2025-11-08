@@ -11,7 +11,7 @@ export default function CallToAction() {
         </p>
         <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
           <Button size="lg" asChild>
-            <Link href="/ai-assistant">Start AI Symptom Check</Link>
+            <Link href="/symptom-checker">Start AI Symptom Check</Link>
           </Button>
           <Button size="lg" variant="outline" asChild>
             <Link href="/doctors">Find a Doctor</Link>

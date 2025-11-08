@@ -25,6 +25,7 @@ export default function Footer({className}: {className?: string}) {
             <div>
               <h4 className="font-semibold mb-3">Patients</h4>
               <ul className="space-y-2 text-sm">
+                <li><Link href="/symptom-checker" className="text-muted-foreground hover:text-foreground transition-colors">Symptom Checker</Link></li>
                 <li><Link href="/ai-assistant" className="text-muted-foreground hover:text-foreground transition-colors">AI Assistant</Link></li>
                 <li><Link href="/doctors" className="text-muted-foreground hover:text-foreground transition-colors">Find a Doctor</Link></li>
                 <li><Link href="/book" className="text-muted-foreground hover:text-foreground transition-colors">Book Appointment</Link></li>

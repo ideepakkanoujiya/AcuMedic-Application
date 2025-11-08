@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 const navLinks = [
+  { href: "/symptom-checker", label: "Symptom Checker" },
   { href: "/ai-assistant", label: "AI Assistant" },
   { href: "/doctors", label: "Find a Doctor" },
   { href: "/dashboard", label: "My Dashboard" },

@@ -9,7 +9,7 @@ const features = [
     icon: <Bot className="h-8 w-8 text-primary" />,
     title: "AI Symptom Analysis",
     description: "Get immediate insights on your symptoms with our advanced AI triage.",
-    href: "/ai-assistant",
+    href: "/symptom-checker",
   },
   {
     icon: <Users className="h-8 w-8 text-primary" />,
