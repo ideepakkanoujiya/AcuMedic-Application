@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Calendar, FileText, Bell, User } from 'lucide-react';
+import { Calendar, FileText, Bell, User, Video } from 'lucide-react';
 import Link from 'next/link';
 
 const containerVariants = {
@@ -53,29 +53,30 @@ export default function Dashboard() {
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Upcoming Appointments</CardTitle>
+                <CardDescription>Manage your upcoming consultations.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                  <motion.div variants={itemVariants}>
-                    <Card className="p-4 flex flex-col md:flex-row justify-between items-center">
-                        <div>
+                    <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex-1">
                             <p className="font-bold">Dr. Emily Carter (Cardiologist)</p>
-                            <p className="text-sm text-muted-foreground">Today, June 28, 2024 at 2:30 PM - Video Consultation</p>
+                            <p className="text-sm text-muted-foreground">Today, June 28, 2024 at 2:30 PM - <span className="text-primary font-medium">Video Consultation</span></p>
                         </div>
-                         <div className="flex gap-2 mt-4 md:mt-0">
-                            <Button>Join Video Call</Button>
-                            <Button variant="outline" asChild>
+                         <div className="flex gap-2 w-full md:w-auto">
+                            <Button className="flex-1"><Video className="mr-2 h-4 w-4"/>Join Video Call</Button>
+                            <Button variant="outline" asChild className="flex-1">
                               <Link href="/queue">Check Queue</Link>
                             </Button>
                         </div>
                     </Card>
                  </motion.div>
                  <motion.div variants={itemVariants}>
-                    <Card className="p-4 flex flex-col md:flex-row justify-between items-center">
-                        <div>
-                            <p className="font-bold">Annual Checkup</p>
-                            <p className="text-sm text-muted-foreground">July 15, 2024 at 10:00 AM - In-Clinic</p>
+                    <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex-1">
+                            <p className="font-bold">Dr. Sarah Chen (Pediatrician)</p>
+                            <p className="text-sm text-muted-foreground">July 15, 2024 at 10:00 AM - <span className="font-medium">In-Clinic Visit</span></p>
                         </div>
-                        <Button variant="secondary">Reschedule</Button>
+                        <Button variant="secondary" className="w-full md:w-auto">Reschedule</Button>
                     </Card>
                  </motion.div>
               </CardContent>
@@ -87,12 +88,14 @@ export default function Dashboard() {
            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Your Medical Reports</CardTitle>
+                <CardDescription>Access your uploaded medical history.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
                   <FileText className="mx-auto h-12 w-12" />
                   <h3 className="mt-4 text-lg font-semibold">No Reports Yet</h3>
-                  <p className="mt-1 text-sm">Your uploaded medical reports will appear here.</p>
+                  <p className="mt-1 text-sm max-w-xs mx-auto">Your uploaded medical reports from doctors will appear here.</p>
+                   <Button variant="outline" className="mt-4">Upload a Report</Button>
                 </div>
               </CardContent>
             </Card>
@@ -102,6 +105,7 @@ export default function Dashboard() {
            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Preventive Care Reminders</CardTitle>
+                <CardDescription>Stay on top of your health with timely reminders.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                  <Card className="p-4 flex justify-between items-center bg-blue-500/10 border-blue-500/20">
@@ -111,6 +115,13 @@ export default function Dashboard() {
                     </div>
                     <Button variant="outline" size="sm">Mark as Done</Button>
                  </Card>
+                  <Card className="p-4 flex justify-between items-center bg-green-500/10 border-green-500/20">
+                    <div>
+                        <p className="font-bold">Flu Vaccination</p>
+                        <p className="text-sm text-green-900 dark:text-green-200">Recommended</p>
+                    </div>
+                    <Button variant="outline" size="sm">Schedule Now</Button>
+                 </Card>
               </CardContent>
             </Card>
         </TabsContent>
@@ -119,9 +130,14 @@ export default function Dashboard() {
            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Your Profile</CardTitle>
+                <CardDescription>Manage your personal information and settings.</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Manage your personal information and settings here.</p>
+                 <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
+                  <User className="mx-auto h-12 w-12" />
+                  <h3 className="mt-4 text-lg font-semibold">Profile Section</h3>
+                  <p className="mt-1 text-sm max-w-xs mx-auto">Your personal information and account settings will be managed here.</p>
+                </div>
               </CardContent>
             </Card>
         </TabsContent>

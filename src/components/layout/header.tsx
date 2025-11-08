@@ -10,12 +10,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import { LanguageContext, languages } from '@/context/language-context';
-import { useUser, useAuth } from '@/firebase'; // Changed from useFirebase
+import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import {
   Avatar,
@@ -28,7 +29,7 @@ const navLinks = [
   { href: "/symptom-checker", label: "Symptom Checker" },
   { href: "/ai-assistant", label: "AI Assistant" },
   { href: "/doctors", label: "Find a Doctor" },
-  { href: "/dashboard", label: "My Dashboard" },
+  { href: "/dashboard", label: "My Dashboard", auth: true },
 ];
 
 export default function Header({className}: {className?: string}) {
@@ -49,6 +50,10 @@ export default function Header({className}: {className?: string}) {
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
+  
+  if (pathname === '/ai-assistant') {
+    return null; // Don't render header on the chat page for a more immersive experience
+  }
 
   return (
     <header className={cn("sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
@@ -56,8 +61,11 @@ export default function Header({className}: {className?: string}) {
         <Logo />
         <nav className="hidden md:flex items-center gap-6 ml-10">
           {navLinks.map(link => (
-             (link.href !== '/dashboard' || user) &&
-            <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+             (!link.auth || user) &&
+            <Link key={link.href} href={link.href} className={cn(
+              "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+              pathname === link.href && "text-primary"
+              )}>
               {link.label}
             </Link>
           ))}
@@ -82,7 +90,9 @@ export default function Header({className}: {className?: string}) {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          {isUserLoading ? null : user ? (
+          {isUserLoading ? (
+            <div className="h-8 w-24 animate-pulse rounded-md bg-muted" />
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -93,10 +103,21 @@ export default function Header({className}: {className?: string}) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                 <DropdownMenuItem disabled>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard">Dashboard</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                 <DropdownMenuItem asChild>
+                  <Link href="/dashboard?tab=profile">Profile Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/10">
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
@@ -126,7 +147,7 @@ export default function Header({className}: {className?: string}) {
                   <Logo />
                   <nav className="flex flex-col gap-4">
                   {navLinks.map(link => (
-                     (link.href !== '/dashboard' || user) &&
+                    (!link.auth || user) &&
                     <Link key={link.href} href={link.href} className="text-lg font-medium text-foreground transition-colors hover:text-primary">
                       {link.label}
                     </Link>

@@ -12,8 +12,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
 
 export const metadata: Metadata = {
-  title: 'AcuMedic',
-  description: 'Intelligent Medical Triage + Appointment Booking System',
+  title: 'AcuMedic - Intelligent Health Companion',
+  description: 'Instant care. Intelligent support — anytime, anywhere.',
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
           <LanguageProvider>
             <div className="flex min-h-screen flex-col bg-background">
               <Header />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 flex flex-col">{children}</main>
               <Footer />
             </div>
             <Toaster />

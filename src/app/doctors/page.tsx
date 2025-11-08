@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 
-const doctors = [
+const allDoctors = [
   {
     name: 'Dr. Emily Carter',
     specialty: 'Cardiologist',
@@ -85,6 +85,15 @@ const itemVariants = {
 
 
 export default function DoctorsPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredDoctors = useMemo(() => {
+    return allDoctors.filter(doctor => 
+      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
   return (
     <div className="container mx-auto py-8 md:py-12">
       <motion.div
@@ -99,10 +108,17 @@ export default function DoctorsPage() {
 
         <Card className="mb-8 p-4 shadow-sm bg-card/80 backdrop-blur-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            <div className="relative">
-               <label htmlFor="search-doctor" className="text-sm font-medium text-muted-foreground">Doctor/Specialty</label>
+            <div className="relative lg:col-span-2">
+               <label htmlFor="search-doctor" className="text-sm font-medium text-muted-foreground">Doctor Name or Specialty</label>
                <Search className="absolute left-3 bottom-3 h-5 w-5 text-muted-foreground" />
-               <Input id="search-doctor" type="text" placeholder="e.g., Dr. Smith or Cardiologist" className="pl-10 h-11" />
+               <Input 
+                  id="search-doctor" 
+                  type="text" 
+                  placeholder="e.g., Dr. Carter or Cardiologist" 
+                  className="pl-10 h-11"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
             <div>
                <label htmlFor="location" className="text-sm font-medium text-muted-foreground">Location</label>
@@ -111,9 +127,9 @@ export default function DoctorsPage() {
                     <SelectValue placeholder="All Locations" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ny">New York</SelectItem>
-                    <SelectItem value="sf">San Francisco</SelectItem>
                     <SelectItem value="mumbai">Mumbai</SelectItem>
+                    <SelectItem value="delhi">Delhi</SelectItem>
+                    <SelectItem value="bangalore">Bangalore</SelectItem>
                   </SelectContent>
                 </Select>
             </div>
@@ -130,9 +146,6 @@ export default function DoctorsPage() {
                   </SelectContent>
                 </Select>
             </div>
-            <Button size="lg" className="h-11 w-full">
-              Search
-            </Button>
           </div>
         </Card>
       </motion.div>
@@ -143,9 +156,9 @@ export default function DoctorsPage() {
         initial="hidden"
         animate="visible"
       >
-        {doctors.map((doctor, index) => (
+        {filteredDoctors.map((doctor, index) => (
           <motion.div key={index} variants={itemVariants}>
-            <Card className="h-full flex flex-col overflow-hidden hover:border-primary transition-all shadow-md">
+            <Card className="h-full flex flex-col overflow-hidden hover:border-primary transition-all shadow-md hover:shadow-primary/10">
               <CardContent className="p-6 text-center flex flex-col flex-grow">
                  <Image
                     src={doctor.photoUrl}
@@ -170,7 +183,7 @@ export default function DoctorsPage() {
                   </div>
                 </div>
 
-                <div className="mt-auto space-y-4">
+                <div className="mt-auto space-y-4 pt-4 border-t">
                   <div>
                     <h4 className="text-sm font-semibold mb-2 flex items-center justify-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" /> Available Today</h4>
                     <div className="flex flex-wrap justify-center gap-2">

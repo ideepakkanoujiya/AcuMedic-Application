@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Stethoscope, Calendar, Globe, Bot, MapPin, Siren } from 'lucide-react';
+import { Search, Stethoscope, Globe, Bot, MapPin, Siren, BookMarked, BarChart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -40,6 +40,8 @@ const baseSuggestions = [
     { name: 'Hospitals Nearby', href: 'https://www.google.com/maps/search/hospitals+near+me', icon: <MapPin className="h-5 w-5 text-primary" />, external: true },
     { name: 'Call an Ambulance', href: 'tel:112', icon: <Siren className="h-5 w-5 text-primary" />, external: true },
     { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" />, external: false },
+    { name: 'Book an Appointment', href: '/book', icon: <BookMarked className="h-5 w-5 text-primary" />, external: false },
+    { name: 'Live Queue Status', href: '/queue', icon: <BarChart className="h-5 w-5 text-primary" />, external: false },
 ];
 
 const floatingIcons = [
@@ -134,7 +136,7 @@ export default function Hero() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onFocus={() => setPopoverOpen(true)}
-                        aria-label="Search doctors or specialties"
+                        aria-label="Search symptoms, doctors or specialties"
                       />
                        <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10">
                         Search
