@@ -11,7 +11,7 @@ export default function CallToAction() {
         </p>
         <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
           <Button size="lg" variant="secondary" asChild>
-            <Link href="/signup">Get Started Now</Link>
+            <Link href="/dashboard">Get Started Now</Link>
           </Button>
           <Button size="lg" variant="outline" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
             <Link href="/doctors">I'm a Doctor</Link>
