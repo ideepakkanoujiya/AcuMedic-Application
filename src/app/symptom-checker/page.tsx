@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LanguageContext } from '@/context/language-context';
 
 
 const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
@@ -166,6 +167,7 @@ export default function SymptomCheckerPage() {
   const [analysis, setAnalysis] = useState<AISymptomCheckerOutput | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { language } = useContext(LanguageContext);
 
   const handleAnalysis = async () => {
     if (symptoms.trim() === '') {
@@ -183,6 +185,7 @@ export default function SymptomCheckerPage() {
       const result = await aiSymptomChecker({
         symptoms: symptoms,
         image: imagePreview ?? undefined,
+        language: language,
       });
 
       setAnalysis(result);

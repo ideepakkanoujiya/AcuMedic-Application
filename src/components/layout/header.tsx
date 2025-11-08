@@ -4,7 +4,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Globe } from 'lucide-react';
+import { Menu, Globe, Check } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { useContext } from 'react';
+import { LanguageContext, languages } from '@/context/language-context';
 
 const navLinks = [
   { href: "/symptom-checker", label: "Symptom Checker" },
@@ -23,6 +25,7 @@ const navLinks = [
 
 export default function Header({className}: {className?: string}) {
   const pathname = usePathname();
+  const { language, setLanguage } = useContext(LanguageContext);
 
   if (pathname === '/ai-assistant') {
     return null;
@@ -48,11 +51,14 @@ export default function Header({className}: {className?: string}) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>🇬🇧 English</DropdownMenuItem>
-              <DropdownMenuItem>🇮🇳 हिन्दी</DropdownMenuItem>
-              <DropdownMenuItem>বাংলা</DropdownMenuItem>
-              <DropdownMenuItem>தமிழ்</DropdownMenuItem>
-              <DropdownMenuItem>తెలుగు</DropdownMenuItem>
+              {languages.map(lang => (
+                <DropdownMenuItem key={lang.code} onSelect={() => setLanguage(lang.code)}>
+                  <div className="flex items-center justify-between w-full">
+                    <span>{lang.flag} {lang.name}</span>
+                    {language === lang.code && <Check className="h-4 w-4" />}
+                  </div>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" asChild>
