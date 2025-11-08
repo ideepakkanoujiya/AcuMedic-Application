@@ -5,18 +5,18 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Stethoscope, Ambulance, Hospital, Bot, BrainCircuit, HeartPulse, Dna } from 'lucide-react';
+import { Search, Stethoscope, Ambulance, Hospital, Bot, BrainCircuit, HeartPulse, Dna, Calendar, Users, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
 
-const suggestions = [
+const baseSuggestions = [
     { name: 'Check Symptoms', href: '/ai-assistant', icon: <Bot className="h-5 w-5 text-primary" /> },
     { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" /> },
-    { name: 'Nearby Hospitals', href: 'https://www.google.com/maps/search/nearby+hospitals', icon: <Hospital className="h-5 w-5 text-primary" />, external: true },
-    { name: 'Call an Ambulance', href: 'tel:112', icon: <Ambulance className="h-5 w-5 text-destructive" />, external: true },
+    { name: 'Book an Appointment', href: '/book', icon: <Calendar className="h-5 w-5 text-primary" /> },
+    { name: 'Live Queue Status', href: '/queue', icon: <Users className="h-5 w-5 text-primary" /> },
 ];
 
 const floatingIcons = [
@@ -34,9 +34,26 @@ export default function Hero() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`/doctors?search=${encodeURIComponent(searchTerm)}`);
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
     }
   };
+  
+  const handleInternalSearch = (e: React.FormEvent) => {
+     e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/doctors?search=${encodeURIComponent(searchTerm)}`);
+    } else {
+      router.push('/doctors');
+    }
+  }
+
+  const dynamicSuggestions = searchTerm.trim()
+    ? [
+        { name: `Web Search for "${searchTerm}"`, href: `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, icon: <Globe className="h-5 w-5 text-primary" />, external: true },
+        ...baseSuggestions,
+      ]
+    : baseSuggestions;
+
 
   return (
     <section className="relative overflow-hidden bg-background py-20 md:py-32">
@@ -93,7 +110,7 @@ export default function Hero() {
             >
               <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild>
-                   <form onSubmit={handleSearch} className="relative group" onClick={() => setPopoverOpen(true)}>
+                   <form onSubmit={handleInternalSearch} className="relative group" onFocus={() => setPopoverOpen(true)}>
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                       <Input
                         type="text"
@@ -111,11 +128,11 @@ export default function Hero() {
                 <PopoverContent side="bottom" className="w-[calc(100vw-2rem)] sm:w-[500px] md:w-[640px] p-4" align="center">
                     <p className="text-sm font-medium text-muted-foreground mb-3 px-2">Suggestions</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {suggestions.map((item) => (
-                           <Link key={item.name} href={item.href} target={item.external ? '_blank' : '_self'} rel={item.external ? 'noopener noreferrer' : ''} className="block">
+                        {dynamicSuggestions.map((item) => (
+                           <Link key={item.name} href={item.href} target={item.external ? '_blank' : '_self'} rel={item.external ? 'noopener noreferrer' : ''} className="block" onClick={() => setPopoverOpen(false)}>
                             <div className={cn("flex items-center gap-3 p-3 rounded-md hover:bg-muted transition-colors cursor-pointer", item.name.includes('Ambulance') && 'text-destructive hover:bg-destructive/10')}>
                                 {item.icon}
-                                <span className="font-medium text-sm">{item.name}</span>
+                                <span className="font-medium text-sm truncate">{item.name}</span>
                             </div>
                            </Link>
                         ))}
