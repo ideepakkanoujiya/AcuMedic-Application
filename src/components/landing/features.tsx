@@ -1,89 +1,97 @@
 "use client";
-import { Bot, Clock, MessageSquare, FolderClock } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Bot, Users, Video, MessageCircle, FileClock } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
 const features = [
   {
     icon: <Bot className="h-8 w-8 text-primary" />,
-    title: "AI Symptom Checker",
-    description: "Get an initial diagnosis and recommendation from our advanced AI.",
-    href: "/symptom-checker",
+    title: "AI Symptom Analysis",
+    description: "Get immediate insights on your symptoms with our advanced AI triage.",
   },
   {
-    icon: <Clock className="h-8 w-8 text-primary" />,
-    title: "Smart Queue & Wait Time",
-    description: "Track your queue position and wait time in real-time. No more guessing.",
-    href: "#",
+    icon: <Users className="h-8 w-8 text-primary" />,
+    title: "Live Queue Tracking",
+    description: "See your real-time position and estimated wait time for your appointment.",
   },
   {
-    icon: <MessageSquare className="h-8 w-8 text-primary" />,
-    title: "WhatsApp Booking",
-    description: "Book appointments directly through WhatsApp for ultimate convenience.",
-    href: "#",
+    icon: <Video className="h-8 w-8 text-primary" />,
+    title: "Tele-Consultations",
+    description: "Connect with top doctors from the comfort of your home via secure video.",
   },
   {
-    icon: <FolderClock className="h-8 w-8 text-primary" />,
-    title: "Report Storage & History",
-    description: "Securely store and access your medical reports and history anytime.",
-    href: "#",
+    icon: <MessageCircle className="h-8 w-8 text-primary" />,
+    title: "WhatsApp Chatbot",
+    description: "Book and manage appointments effortlessly using our smart WhatsApp assistant.",
+  },
+  {
+    icon: <FileClock className="h-8 w-8 text-primary" />,
+    title: "Medical Reports",
+    description: "All your medical history and reports, securely stored and accessible anytime.",
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+    },
+  },
+};
+
 export default function Features() {
   return (
-    <section className="py-20 md:py-28">
+    <section className="py-20 md:py-28 bg-background">
       <div className="container">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold font-headline">A New Era of Healthcare</motion.h2>
+            className="text-3xl md:text-4xl font-bold font-headline">The Future of Personalized Healthcare</motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
             className="mt-4 text-muted-foreground md:text-lg">
-            MediQ AI combines cutting-edge technology with compassionate care to bring you a seamless healthcare experience.
+            MediQ AI integrates state-of-the-art technology to provide a healthcare experience that is intelligent, convenient, and tailored to you.
           </motion.p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => {
-            const cardContent = (
-               <Card className="text-center shadow-lg hover:shadow-primary/20 transition-shadow duration-300 transform hover:-translate-y-2 h-full bg-card/50 backdrop-blur-sm">
-                <CardHeader className="items-center p-6">
-                  {feature.icon}
-                  <CardTitle className="mt-4">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardContent>
-              </Card>
-            );
-
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                {feature.href !== '#' && feature.href ? (
-                  <Link href={feature.href} className="block h-full">
-                    {cardContent}
-                  </Link>
-                ) : (
-                  cardContent
-                )}
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {features.map((feature, index) => (
+             <motion.div key={index} variants={itemVariants} className="h-full">
+                <Card className="text-left shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1 h-full bg-card/50 backdrop-blur-sm border-border/50">
+                  <CardHeader>
+                    {feature.icon}
+                    <CardTitle className="mt-4 text-xl">{feature.title}</CardTitle>
+                    <CardDescription className="pt-1">{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
               </motion.div>
-            )
-          })}
-        </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

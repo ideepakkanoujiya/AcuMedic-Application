@@ -2,13 +2,18 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, Globe } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navLinks = [
-  { href: "/symptom-checker", label: "Symptom Checker" },
+  { href: "/ai-assistant", label: "AI Assistant" },
   { href: "/doctors", label: "Find a Doctor" },
-  { href: "/specialties", label: "Specialties" },
-  { href: "/about", label: "About Us" },
+  { href: "/dashboard", label: "My Dashboard" },
 ];
 
 export default function Header() {
@@ -24,6 +29,21 @@ export default function Header() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Globe className="h-5 w-5" />
+                <span className="sr-only">Toggle language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>🇬🇧 English</DropdownMenuItem>
+              <DropdownMenuItem>🇮🇳 हिन्दी</DropdownMenuItem>
+              <DropdownMenuItem>বাংলা</DropdownMenuItem>
+              <DropdownMenuItem>தமிழ்</DropdownMenuItem>
+              <DropdownMenuItem>తెలుగు</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" asChild>
             <Link href="/login">Login</Link>
           </Button>

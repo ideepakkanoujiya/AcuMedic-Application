@@ -3,85 +3,90 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
+import Link from 'next/link';
 
 export default function Hero() {
   const router = useRouter();
-  const [symptom, setSymptom] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (symptom.trim()) {
-      router.push(`/symptom-checker?symptom=${encodeURIComponent(symptom)}`);
-    } else {
-      router.push('/symptom-checker');
+    if (searchTerm.trim()) {
+      router.push(`/doctors?search=${encodeURIComponent(searchTerm)}`);
     }
   };
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
-          <div className="gradient-background"></div>
+    <section className="relative overflow-hidden bg-background py-20 md:py-32">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
+      >
+        <div className="blur-[106px] h-56 bg-gradient-to-br from-primary to-purple-400 dark:from-blue-700" />
+        <div className="blur-[106px] h-32 bg-gradient-to-r from-cyan-400 to-sky-300 dark:to-indigo-600" />
       </div>
-      <div className="container grid lg:grid-cols-2 gap-12 items-center py-20 md:py-32 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter font-headline">
-            Your Health, <br />
-            <span className="text-primary">Intelligently Guided.</span>
-          </h1>
-          <p className="max-w-[600px] text-muted-foreground md:text-xl">
-            Get instant medical guidance with our AI-powered symptom checker, book appointments seamlessly, and take control of your health journey.
-          </p>
-          <form onSubmit={handleSearch} className="flex w-full max-w-lg items-center space-x-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search symptoms, doctors or specialties..."
-                className="pl-10 pr-4 py-3 h-12 text-base bg-background/50"
-                value={symptom}
-                onChange={(e) => setSymptom(e.target.value)}
-                aria-label="Search symptoms, doctors or specialties"
-              />
+      <div className="container relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="space-y-8"
+          >
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter font-headline">
+              Smarter Healthcare,
+              <br />
+              <span className="text-primary">Instantly.</span>
+            </h1>
+            <p className="max-w-[600px] text-lg text-muted-foreground">
+              From instant AI-driven symptom analysis to seamless appointment booking, take control of your health journey with confidence.
+            </p>
+            <div className="space-y-4">
+               <form onSubmit={handleSearch} className="flex w-full max-w-md items-center space-x-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Search doctors, specialties..."
+                      className="pl-10 pr-4 py-3 h-12 text-base"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      aria-label="Search doctors or specialties"
+                    />
+                  </div>
+                  <Button type="submit" size="lg">
+                    Search
+                  </Button>
+                </form>
+                <div className="flex items-center gap-4">
+                    <Button size="lg" className="w-full sm:w-auto" asChild>
+                       <Link href="/ai-assistant">Start AI Symptom Check</Link>
+                    </Button>
+                    <p className="text-sm text-muted-foreground hidden sm:block">...or search for a doctor.</p>
+                </div>
             </div>
-            <Button type="submit" size="lg" className="bg-primary/90 hover:bg-primary">
-              Search
-            </Button>
-          </form>
-           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11.438 2.992a10.003 10.003 0 1 0 11.566 11.566l-2.094-3.625a10.01 10.01 0 0 0-7.38-7.38L11.438 2.99Z" /><path d="M10 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z" /><path d="m22 2-2.25 1.75" /><path d="m14 2.75 1.75 2.25" /><path d="m2.75 10-2.25 1.75" /><path d="m2.75 14 2.25 1.75" /><path d="M10 21.25 11.75 19" /></svg>
-              <p>Powered by Gemini AI</p>
-          </div>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="hidden lg:block"
-        >
-          {heroImage && (
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            className="hidden lg:block"
+          >
             <Image
-              src={heroImage.imageUrl}
-              alt={heroImage.description}
-              width={1200}
-              height={800}
+              src="https://picsum.photos/seed/medhero/1200/1000"
+              alt="A doctor using a futuristic medical interface"
+              width={600}
+              height={500}
               className="rounded-xl shadow-2xl"
-              data-ai-hint={heroImage.imageHint}
+              data-ai-hint="futuristic medical"
               priority
             />
-          )}
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
