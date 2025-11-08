@@ -10,48 +10,28 @@ import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-const IconPill = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256 256"
-    {...props}
+
+const IconHeart = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24"
     fill="currentColor"
-  >
-    <path d="M156.23,28.23,40.48,143.76a44,44,0,0,0,62.24,62.24L218,89.77a44,44,0,0,0-61.77-61.54Z" />
+    {...props}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
   </svg>
 );
 
-const IconVirus = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256 256"
-    {...props}
-    fill="currentColor"
-  >
-    <path d="M232,104a8,8,0,0,0-8,8v16a8,8,0,0,0,16,0V112A8,8,0,0,0,232,104ZM128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM112,32a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,112,32Zm32,0a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,144,32Zm8,72v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm-32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm-32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm0,32v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0Zm32,0v8a8,8,0,0,0,16,0v-8a8,8,0,0,0-16,0ZM112,224a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,112,224Zm32,0a8,8,0,0,1-8,8,8,8,0,0,1,0-16A8,8,0,0,1,144,224Zm-80-88H80a8,8,0,0,0,0,16h8a8,8,0,0,0,0-16ZM32,144a8,8,0,0,1-8-8,8,8,0,0,1,0,16A8,8,0,0,1,32,144Zm16-32V96a8,8,0,0,0-16,0v16a8,8,0,0,0,16,0Z" />
-  </svg>
-);
-
-const IconPlus = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256 256"
-    {...props}
-    fill="currentColor"
-  >
-    <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
-  </svg>
-);
-
-const IconDna = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256 256"
-    {...props}
-    fill="currentColor"
-  >
-    <path d="M229.49,65.4l-48-32a12,12,0,1,0-12.91,19.29l22.4,15C136.2,85.1,123.7,128.8,131,168.32l-22.31,14.88a12,12,0,1,0,12.62,19l48-32a12,12,0,1,0-12.62-19L134.4,166.1c-6.19-33,4.4-71,58.07-88.42l22.4,15A12,12,0,1,0,229.49,65.4ZM125,87.68c-53.67-17.4-66.17,26.3-58.09,60.22L34.51,174.6a12,12,0,1,0,12.62,19l48-32a12,12,0,1,0-12.62-19l-22.31,14.88C52.3,123.2,64.8,79.5,119.58,97.1l22.31-14.88a12,12,0,1,0-12.62-19Z" />
-  </svg>
+const IconMind = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        {...props}
+    >
+        <path d="M6.5 10.375C6.5 7.424 8.924 5 11.875 5C14.826 5 17.25 7.424 17.25 10.375C17.25 13.326 14.826 15.75 11.875 15.75C10.457 15.75 9.17803 15.19 8.21303 14.25M6.5 10.375C6.5 10.963 6.696 11.5 7 11.938M6.5 10.375C5.904 10.375 5.5 9.971 5.5 9.375C5.5 8.779 5.904 8.375 6.5 8.375C7.096 8.375 7.5 8.779 7.5 9.375C7.5 9.971 7.096 10.375 6.5 10.375ZM9.5 18.25C9.5 18.25 9.125 17.25 10.25 16.75M13.5 18.25C13.5 18.25 13.875 17.25 12.75 16.75M11.5 19.25V15.75M17.5 13.375C17.5 13.375 19 12.375 19.5 13.75M18.5 7.375C18.5 7.375 19.5 6 20.5 6.5M5.5 14.375C5.5 14.375 4 15.375 3.5 13.75M4.5 7.375C4.5 7.375 3.5 6 2.5 6.5M11.875 5C11.875 5 10.875 3 12.375 2M11.875 5C11.875 5 12.875 3 14.375 2"/>
+    </svg>
 );
 
 
@@ -63,10 +43,12 @@ const baseSuggestions = [
 ];
 
 const floatingIcons = [
-  { icon: IconPill, className: 'top-[10%] left-[5%] w-16 h-16', duration: 12 },
-  { icon: IconVirus, className: 'top-[20%] right-[8%] w-12 h-12', duration: 10 },
-  { icon: IconDna, className: 'bottom-[15%] left-[15%] w-14 h-14', duration: 15 },
-  { icon: IconPlus, className: 'bottom-[10%] right-[12%] w-10 h-10', duration: 9 },
+  { icon: IconHeart, className: 'top-[15%] left-[5%] w-16 h-16', duration: 12 },
+  { icon: IconMind, className: 'top-[20%] right-[8%] w-14 h-14 stroke-current', duration: 10 },
+  { icon: IconHeart, className: 'bottom-[15%] left-[15%] w-12 h-12', duration: 15 },
+  { icon: IconMind, className: 'bottom-[10%] right-[12%] w-10 h-10 stroke-current', duration: 9 },
+  { icon: IconHeart, className: 'top-[50%] left-[20%] w-8 h-8', duration: 8 },
+  { icon: IconMind, className: 'top-[60%] right-[25%] w-12 h-12 stroke-current', duration: 14 },
 ];
 
 export default function Hero() {
