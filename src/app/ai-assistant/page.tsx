@@ -79,31 +79,32 @@ export default function AiAssistantPage() {
   }, []);
 
   useEffect(() => {
-    chatContainerRef.current?.scrollTo(0, chatContainerRef.current.scrollHeight);
+    if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSendMessage = async () => {
     if (input.trim() === '' && !imageFile) return;
     setIsLoading(true);
-    setAnalysis(null); // Clear previous analysis
+    setAnalysis(null);
 
     const userMessage: Message = { sender: 'user', text: input };
     if (imagePreview) {
       userMessage.imagePreview = imagePreview;
     }
+
+    setMessages(prev => [...prev, userMessage]);
     
     const currentInput = input;
     const currentImagePreview = imagePreview;
 
-    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setImageFile(null);
     setImagePreview(null);
     
     // Initial bot thinking message
-    setTimeout(() => {
-      setMessages(prev => [...prev, { sender: 'bot', text: 'Analyzing your symptoms...' }]);
-    }, 500);
+    setMessages(prev => [...prev, { sender: 'bot', text: 'Analyzing your symptoms...' }]);
 
     try {
       const result = await aiSymptomChecker({
@@ -120,7 +121,6 @@ export default function AiAssistantPage() {
         text: botResponseText,
       };
 
-      // Replace the "Analyzing..." message with the actual response
       setMessages(prev => [...prev.slice(0, -1), botResponse]);
 
     } catch (error) {
@@ -182,7 +182,7 @@ export default function AiAssistantPage() {
             {messages.map((msg, index) => (
               <ChatMessageBubble key={index} message={msg} />
             ))}
-             {isLoading && messages[messages.length - 1]?.sender === 'user' && (
+             {isLoading && messages[messages.length - 1]?.sender !== 'user' && (
                 <div className="flex items-start gap-3">
                    <Avatar className="h-8 w-8">
                     <AvatarFallback><Bot /></AvatarFallback>
