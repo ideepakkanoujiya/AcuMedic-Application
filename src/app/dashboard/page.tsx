@@ -111,14 +111,17 @@ export default function Dashboard() {
            <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Your Medical Reports</CardTitle>
-                <CardDescription>Access your uploaded medical history.</CardDescription>
+                <CardDescription>Access your uploaded medical history and get AI-powered summaries.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
                   <FileText className="mx-auto h-12 w-12" />
                   <h3 className="mt-4 text-lg font-semibold">No Reports Yet</h3>
-                  <p className="mt-1 text-sm max-w-xs mx-auto">Your uploaded medical reports from doctors will appear here.</p>
-                   <Button variant="outline" className="mt-4">Upload a Report</Button>
+                  <p className="mt-1 text-sm max-w-sm mx-auto">Your uploaded medical reports will appear here. You can also get a simple summary of any report.</p>
+                   <div className="flex flex-col sm:flex-row justify-center gap-2 mt-4">
+                    <Button variant="outline">Upload a Report</Button>
+                    <Button asChild><Link href="/report-summarizer">Summarize a Report</Link></Button>
+                   </div>
                 </div>
               </CardContent>
             </Card>
