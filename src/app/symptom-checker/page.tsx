@@ -206,14 +206,14 @@ export default function SymptomCheckerPage() {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        setSymptoms(prev => prev + finalTranscript);
+        setSymptoms(symptoms + finalTranscript + interimTranscript);
       };
 
       recognitionRef.current.onend = () => {
         setIsRecording(false);
       };
     }
-  }, [language]);
+  }, [language, symptoms]);
 
   const handleMicClick = () => {
     if (!recognitionRef.current) {
@@ -227,10 +227,12 @@ export default function SymptomCheckerPage() {
 
     if (isRecording) {
       recognitionRef.current.stop();
+      setIsRecording(false);
     } else {
+      setSymptoms('');
       recognitionRef.current.start();
+      setIsRecording(true);
     }
-    setIsRecording(!isRecording);
   };
 
 
@@ -328,14 +330,14 @@ export default function SymptomCheckerPage() {
                     <CardContent className="space-y-4">
                         <div className="relative">
                             <Textarea 
-                                placeholder="e.g., I have a high fever, a sore throat, and a persistent cough..."
+                                placeholder={isRecording ? "Listening..." : "e.g., I have a high fever, a sore throat, and a persistent cough..."}
                                 className="min-h-[150px] text-base pr-12"
                                 value={symptoms}
                                 onChange={e => setSymptoms(e.target.value)}
                                 disabled={isLoading || !!analysis}
                             />
-                            <Button variant="ghost" size="icon" className={cn("absolute right-2 bottom-2", isRecording ? "text-destructive" : "")} onClick={handleMicClick} disabled={isLoading || !!analysis}>
-                                <Mic className="h-5 w-5" />
+                            <Button variant="ghost" size="icon" className="absolute right-2 bottom-2" onClick={handleMicClick} disabled={isLoading || !!analysis}>
+                                <Mic className={cn("h-5 w-5", isRecording ? "text-destructive animate-pulse" : "")} />
                             </Button>
                         </div>
 

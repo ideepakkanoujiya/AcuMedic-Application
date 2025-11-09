@@ -64,29 +64,31 @@ export default function AiAssistantPage() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
+      recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = true;
 
       recognitionRef.current.onresult = (event: any) => {
+        let interimTranscript = '';
         let finalTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
           }
         }
-        if (finalTranscript) {
-          setInput(prev => prev + finalTranscript);
-        }
+        setInput(finalTranscript || interimTranscript);
       };
 
       recognitionRef.current.onend = () => {
         setIsRecording(false);
-        if(input.trim()){
-            handleSendMessage(true);
+        // Automatically send the message if there's content when recording stops
+        if (input.trim()) {
+           setTimeout(() => handleSendMessage(true), 100);
         }
       };
     }
-  }, [input]);
+  }, []);
 
   const handleMicClick = () => {
     if (!recognitionRef.current) {
@@ -100,11 +102,12 @@ export default function AiAssistantPage() {
 
     if (isRecording) {
       recognitionRef.current.stop();
+      setIsRecording(false);
     } else {
       setInput('');
       recognitionRef.current.start();
+      setIsRecording(true);
     }
-    setIsRecording(!isRecording);
   };
 
 
@@ -189,11 +192,11 @@ export default function AiAssistantPage() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-              disabled={isLoading || isRecording}
+              disabled={isLoading}
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={handleMicClick} disabled={isLoading}>
-                <Mic className={cn("h-5 w-5", isRecording ? "text-destructive" : "")} />
+                <Mic className={cn("h-5 w-5", isRecording ? "text-destructive animate-pulse" : "")} />
               </Button>
               <Button size="icon" onClick={() => handleSendMessage()} disabled={!input.trim() || isLoading}>
                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
