@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { predictHealthRisk, PredictiveHealthRiskOutput } from '@/ai/flows/predictive-health-risk-flow';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   age: z.coerce.number().min(18, 'Age must be at least 18').max(100),
@@ -49,13 +50,25 @@ type FormValues = z.infer<typeof formSchema>;
 const RiskResultDisplay = ({ results }: { results: PredictiveHealthRiskOutput }) => {
   const getRiskColor = (level: string) => {
     switch (level) {
-      case 'low': return 'bg-green-500';
+      case 'low': return 'bg-accent';
       case 'moderate': return 'bg-yellow-500';
       case 'high': return 'bg-orange-500';
-      case 'very-high': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'very-high': return 'bg-destructive';
+      default: return 'bg-muted';
     }
   };
+  
+  const getRiskBadgeVariant = (level: string): "default" | "secondary" | "destructive" => {
+    switch (level) {
+      case 'low': return 'default';
+      case 'moderate': return 'secondary';
+      case 'high':
+      case 'very-high':
+        return 'destructive';
+      default: return 'default';
+    }
+  }
+
 
   return (
     <motion.div
@@ -76,9 +89,12 @@ const RiskResultDisplay = ({ results }: { results: PredictiveHealthRiskOutput })
             <div key={risk.condition}>
               <div className="flex justify-between items-center mb-1">
                 <span className="font-medium">{risk.condition}</span>
-                <Badge variant={
-                  risk.level === 'low' ? 'default' : risk.level === 'moderate' ? 'secondary' : 'destructive'
-                } className="capitalize">{risk.level.replace('-', ' ')}</Badge>
+                <Badge 
+                    variant={getRiskBadgeVariant(risk.level)}
+                    className="capitalize"
+                >
+                    {risk.level.replace('-', ' ')}
+                </Badge>
               </div>
               <Progress value={risk.percentage} className="h-3" indicatorClassName={getRiskColor(risk.level)} />
               <p className="text-right text-sm text-muted-foreground mt-1">{risk.percentage}% Risk</p>
@@ -107,17 +123,17 @@ const RiskResultDisplay = ({ results }: { results: PredictiveHealthRiskOutput })
            {results.recommendations.map(rec => (
             <div key={rec.area} className="p-3 bg-primary/10 rounded-lg">
               <p className="font-semibold text-primary">{rec.area}</p>
-              <p className="text-sm text-primary-foreground/80">{rec.suggestion}</p>
+              <p className="text-foreground/80">{rec.suggestion}</p>
             </div>
           ))}
         </CardContent>
       </Card>
-      <Card className="bg-blue-900/10 border-blue-500/20">
+      <Card className="bg-primary/10 border-primary/20">
          <CardHeader>
-          <CardTitle className="text-blue-200">Summary & Next Steps</CardTitle>
+          <CardTitle className="text-primary">Summary & Next Steps</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-blue-300">{results.overallSummary}</p>
+          <p className="text-foreground/80">{results.overallSummary}</p>
           <Button className="mt-4 w-full" asChild><a href="/doctors">Find a Specialist</a></Button>
         </CardContent>
       </Card>
