@@ -35,6 +35,12 @@
       "description": "Stock photo of a third friendly female doctor.",
       "imageUrl": "https://images.unsplash.com/photo-1659353888922-7c7b1ad21650?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZG9jdG9yJTIwZnJpZW5kbHl8ZW58MHx8fHwxNzYyNTQ3MzI3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "doctor friendly"
+    },
+    {
+      "id": "ai-diagnostics-display",
+      "description": "A futuristic display showing AI-driven medical diagnostics and data visualization.",
+      "imageUrl": "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2FsJTIwYWklMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzYzMjY4NjU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medical ai"
     }
   ]
 }
