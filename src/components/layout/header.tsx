@@ -4,7 +4,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Globe, Check, LogOut } from 'lucide-react';
+import { Menu, Globe, Check, LogOut, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,13 +27,16 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { motion } from 'framer-motion';
 
 
-const navLinks = [
-  { href: "/symptom-checker", label: "Symptom Checker" },
-  { href: "/health-risk-assessment", label: "Risk Assessment" },
-  { href: "/ai-assistant", label: "AI Assistant" },
+const mainNavLinks = [
   { href: "/doctors", label: "Find a Doctor" },
   { href: "/dashboard", label: "My Dashboard", auth: true },
 ];
+
+const aiToolsLinks = [
+  { href: "/symptom-checker", label: "Symptom Checker" },
+  { href: "/health-risk-assessment", label: "Risk Assessment" },
+  { href: "/ai-assistant", label: "AI Assistant" },
+]
 
 export default function Header({className}: {className?: string}) {
   const pathname = usePathname();
@@ -72,7 +75,24 @@ export default function Header({className}: {className?: string}) {
         <div className="container flex h-16 items-center">
           <Logo />
           <nav className="hidden md:flex items-center gap-6 ml-10">
-            {navLinks.map(link => (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary data-[state=open]:text-primary">
+                  AI Tools <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {aiToolsLinks.map(link => (
+                  <DropdownMenuItem key={link.href} asChild>
+                     <Link href={link.href} className={cn("w-full", pathname === link.href && "text-primary font-semibold")}>
+                        {link.label}
+                      </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {mainNavLinks.map(link => (
               (!link.auth || user) &&
               <Link key={link.href} href={link.href} className={cn(
                 "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
@@ -155,7 +175,7 @@ export default function Header({className}: {className?: string}) {
                   <div className="flex flex-col gap-6 pt-10">
                     <Logo />
                     <nav className="flex flex-col gap-4">
-                    {navLinks.map(link => (
+                    {[...aiToolsLinks, ...mainNavLinks].map(link => (
                       (!link.auth || user) &&
                       <Link key={link.href} href={link.href} className="text-lg font-medium text-foreground transition-colors hover:text-primary">
                         {link.label}
