@@ -136,7 +136,11 @@ export default function AiAssistantPage() {
       };
 
       recognition.onerror = (event: any) => {
-        console.error("Speech recognition error", event.error);
+        toast({
+            variant: "destructive",
+            title: "Voice Recognition Error",
+            description: `An error occurred: ${event.error}. Please check your connection or browser permissions.`,
+        });
         setIsRecording(false);
       };
 
@@ -144,7 +148,7 @@ export default function AiAssistantPage() {
     } else {
         console.warn("Speech Recognition not supported by this browser.");
     }
-  }, [handleSendMessage]);
+  }, [handleSendMessage, toast]);
 
   const handleMicClick = () => {
     if (!recognitionRef.current) {
