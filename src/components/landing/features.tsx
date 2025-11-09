@@ -1,5 +1,5 @@
 "use client";
-import { Bot, Users, Video, FileClock } from 'lucide-react';
+import { Bot, Users, Video, FileClock, HeartPulse } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -22,6 +22,12 @@ const features = [
     title: "Tele-Consultations",
     description: "Connect with top doctors from the comfort of your home via secure video.",
     href: "/doctors",
+  },
+  {
+    icon: <HeartPulse className="h-8 w-8 text-primary" />,
+    title: "Predictive Health Risk",
+    description: "Forecast your long-term health risks for chronic diseases using AI.",
+    href: "/health-risk-assessment",
   },
   {
     icon: <FileClock className="h-8 w-8 text-primary" />,
@@ -74,7 +80,7 @@ export default function Features() {
           </motion.p>
         </div>
         <motion.div 
-          className="grid md:grid-cols-2 lg:grid-cols-2 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
