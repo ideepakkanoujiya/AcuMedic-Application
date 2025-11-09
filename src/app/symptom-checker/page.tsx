@@ -4,10 +4,9 @@ import { useState, useRef, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertCircle, Bot, ImagePlus, Loader2, X, Phone, Calendar, Video, Mic } from 'lucide-react';
+import { AlertCircle, Bot, ImagePlus, Loader2, X, Phone, Calendar, Mic } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
 import { cn } from '@/lib/utils';
@@ -161,7 +160,6 @@ const NextSteps = ({ analysis }: { analysis: AISymptomCheckerOutput }) => {
 
                  <Button variant="outline" className="w-full" asChild>
                    <Link href={`/doctors?specialty=${analysis.recommendedSpecialty}`}>
-                    <Video className="mr-2 h-4 w-4" />
                     Book a Video Consultation
                    </Link>
                  </Button>
@@ -192,13 +190,13 @@ export default function SymptomCheckerPage() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
+      recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = true;
       recognitionRef.current.lang = language;
 
       recognitionRef.current.onresult = (event: any) => {
-        let interimTranscript = '';
         let finalTranscript = '';
+        let interimTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript;
@@ -206,14 +204,14 @@ export default function SymptomCheckerPage() {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        setSymptoms(symptoms + finalTranscript + interimTranscript);
+        setSymptoms(finalTranscript || interimTranscript);
       };
 
       recognitionRef.current.onend = () => {
         setIsRecording(false);
       };
     }
-  }, [language, symptoms]);
+  }, [language]);
 
   const handleMicClick = () => {
     if (!recognitionRef.current) {
@@ -395,3 +393,5 @@ export default function SymptomCheckerPage() {
     </div>
   );
 }
+
+    

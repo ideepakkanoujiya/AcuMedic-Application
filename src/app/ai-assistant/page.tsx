@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -55,82 +55,18 @@ export default function AiAssistantPage() {
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
 
-  useEffect(() => {
-    // @ts-ignore
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
+  const handleSendMessage = useCallback(async (isVoiceInput: boolean = false) => {
+    const currentInput = inputRef.current?.value;
+    if (!currentInput || currentInput.trim() === '' || isLoading) return;
 
-      recognitionRef.current.onresult = (event: any) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
-        setInput(finalTranscript || interimTranscript);
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsRecording(false);
-        // Automatically send the message if there's content when recording stops
-        if (input.trim()) {
-           setTimeout(() => handleSendMessage(true), 100);
-        }
-      };
-    }
-  }, []);
-
-  const handleMicClick = () => {
-    if (!recognitionRef.current) {
-        toast({
-            variant: "destructive",
-            title: "Voice input not supported",
-            description: "Your browser does not support voice recognition.",
-        });
-        return;
-    }
-
-    if (isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-    } else {
-      setInput('');
-      recognitionRef.current.start();
-      setIsRecording(true);
-    }
-  };
-
-
-  useEffect(() => {
-    setMessages([
-        { id: 'initial-1', sender: 'bot', text: "Hello! I'm your conversational AI Health Assistant, AcuMedic." },
-        { id: 'initial-2', sender: 'bot', text: "You can ask me to check your symptoms, define medical terms, or help you find a specialist. How can I help you today?" }
-    ]);
-  }, []);
-
-  useEffect(() => {
-    if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSendMessage = async (isVoiceInput: boolean = false) => {
-    if (input.trim() === '' || (isLoading && !isVoiceInput)) return;
-
-    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: input };
+    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: currentInput };
     setMessages(prev => [...prev, userMessage]);
     
-    const currentInput = input;
     setInput('');
     setIsLoading(true);
 
@@ -167,10 +103,77 @@ export default function AiAssistantPage() {
     } finally {
       setIsLoading(false);
     }
+  }, [isLoading, toast]);
+
+  useEffect(() => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+
+      recognitionRef.current.onresult = (event: any) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        setInput(finalTranscript || interimTranscript);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+        // Using a short timeout to ensure the final transcript is set before sending
+        setTimeout(() => {
+            if (inputRef.current?.value && inputRef.current.value.trim().length > 0) {
+              handleSendMessage(true);
+            }
+        }, 100);
+      };
+    }
+  }, [handleSendMessage]);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+        toast({
+            variant: "destructive",
+            title: "Voice input not supported",
+            description: "Your browser does not support voice recognition.",
+        });
+        return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+      setInput('');
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
   };
 
+
+  useEffect(() => {
+    setMessages([
+        { id: 'initial-1', sender: 'bot', text: "Hello! I'm your conversational AI Health Assistant, AcuMedic." },
+        { id: 'initial-2', sender: 'bot', text: "You can ask me to check your symptoms, define medical terms, or help you find a specialist. How can I help you today?" }
+    ]);
+  }, []);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col bg-background">
+    <div className="flex h-screen flex-col bg-background">
       <main className="flex-1 flex flex-col h-full bg-muted/20">
         <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
           {messages.map((msg) => (
@@ -186,6 +189,7 @@ export default function AiAssistantPage() {
         >
           <div className="relative">
             <Input
+              ref={inputRef}
               type="text"
               placeholder={isRecording ? "Listening..." : "Ask me anything about your health..."}
               className="h-12 pr-28"
@@ -208,3 +212,5 @@ export default function AiAssistantPage() {
     </div>
   );
 }
+
+    
