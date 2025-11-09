@@ -36,6 +36,7 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   
+  // Set initial date on client-side to avoid hydration mismatch
   useEffect(() => {
     setSelectedDate(new Date());
   }, []);
@@ -81,14 +82,14 @@ export default function BookingPage() {
               <motion.div variants={containerVariants} initial="hidden" animate="visible">
                 <h3 className="text-xl font-semibold mb-4">Choose Consultation Type</h3>
                 <RadioGroup defaultValue="clinic" onValueChange={(value: 'clinic' | 'video') => setConsultType(value)} className="space-y-2">
-                  <Label htmlFor="clinic" className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                  <Label htmlFor="clinic" className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-300 transform hover:-translate-y-1">
                     <RadioGroupItem value="clinic" id="clinic" />
                     <div>
                       <p className="font-bold">In-Clinic Visit</p>
                       <p className="text-sm text-muted-foreground">Book an appointment at the doctor's clinic.</p>
                     </div>
                   </Label>
-                  <Label htmlFor="video" className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                  <Label htmlFor="video" className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-300 transform hover:-translate-y-1">
                     <RadioGroupItem value="video" id="video" />
                     <div>
                       <p className="font-bold">Video Consultation</p>
@@ -121,7 +122,7 @@ export default function BookingPage() {
                           key={slot} 
                           variant={selectedTime === slot ? "default" : "outline"}
                           onClick={() => setSelectedTime(slot)}
-                          className="w-full"
+                          className="w-full transition-transform duration-300 hover:scale-105"
                         >
                           {slot}
                         </Button>
@@ -142,19 +143,19 @@ export default function BookingPage() {
                     <p><strong>Time:</strong> {selectedTime}</p>
                     <p><strong>Type:</strong> {consultType === 'clinic' ? 'In-Clinic Visit' : 'Video Consultation'}</p>
                  </Card>
-                 <Button className="mt-6 w-full" asChild><Link href="/dashboard">Go to Dashboard</Link></Button>
+                 <Button className="mt-6 w-full transition-transform duration-300 hover:scale-105" asChild><Link href="/dashboard">Go to Dashboard</Link></Button>
               </motion.div>
             )}
 
             <div className="mt-8 flex justify-between">
               {step > 1 && (
-                <Button variant="outline" onClick={handlePrevStep}>
+                <Button variant="outline" onClick={handlePrevStep} className="transition-transform duration-300 hover:scale-105">
                   <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                 </Button>
               )}
               <div className="flex-grow" />
               {step < 3 && (
-                <Button onClick={handleNextStep} disabled={step === 2 && (!selectedDate || !selectedTime)}>
+                <Button onClick={handleNextStep} disabled={step === 2 && (!selectedDate || !selectedTime)} className="transition-transform duration-300 hover:scale-105">
                   {step === 2 ? 'Confirm Booking' : 'Next'} <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
