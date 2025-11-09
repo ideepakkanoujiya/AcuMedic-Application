@@ -273,7 +273,8 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "anonymous",
+      "google.com"
     ]
   },
   "firestore": {
@@ -422,3 +423,4 @@
     "reasoning": "The Firestore data structure is designed to ensure security, scalability, and debuggability, adhering to the core design principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). It leverages Structural Segregation (Homogeneous Security Posture), Access Modeling (Standardization and Consistency), and Data Clarity and Predictability.\n\n**Authorization Independence:**  Critical user and role data are denormalized where necessary to eliminate `get()` calls in security rules.  For example, access to a patient's reports is based on the presence of the user's ID in the `patientId` of the `PatientReport` document itself. Also, access to `DoctorProfile` is secured under the user's document, which allows us to prevent `get()` calls.\n\n**Structural Segregation:**  The structure separates different types of data into distinct collections based on their security requirements.  For instance, user profiles are stored under `/users/{userId}`, enforcing path-based ownership.  There is no data mixing in collections.\n\n**Access Modeling:**\n*   **Private Data:** User data (profiles) uses path-based ownership under `/users/{userId}`.\n*   **Hierarchical Paths:** Entities that represent a `User 1:N Entity` relationship (e.g., a `User` has many `Appointments`, `PatientReports`, and `Reminders`) implement a path-based ownership like `/users/{userId}/appointments/{appointmentId}`. This structure is highly secure and makes ownership-based security rules simple and efficient.\n*   **Global Roles (DBAC):** Utilizes existence checks in dedicated collections for admin roles (e.g., `/roles_admin/{uid}`) instead of custom claims.\n\n**QAPs (Rules are not Filters):** The data structure enables secure `list` operations by segregating data and using denormalization, preventing the need to filter based on data content in rules.\n\n**Invariants:**  The data structure helps maintain the integrity of ownership (using explicit `ownerId` fields or path-based ownership), timestamps (with `uploadedAt` in `PatientReport`), and denormalized data (replicating authorization data to avoid `get()` calls).\n\nThis structure facilitates simple, robust, and easily debuggable security rules, minimizing complexity and ensuring security."
   }
 }
+    
