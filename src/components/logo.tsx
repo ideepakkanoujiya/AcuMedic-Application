@@ -14,25 +14,19 @@ const CustomLogo = (props: React.SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <path
-      d="M16 4L28 28H4L16 4Z"
-      className="stroke-primary"
-      strokeWidth="2.5"
-      strokeLinejoin="round"
+    <path 
+      d="M16 6C16 6 16 16 26 16" 
+      className="stroke-primary" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
     />
-    <path
-      d="M16 13V21"
-      className="stroke-primary"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M12 17H20"
-      className="stroke-primary"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <path 
+      d="M6 16C6 16 16 16 16 26" 
+      className="stroke-primary" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
     />
   </svg>
 );
