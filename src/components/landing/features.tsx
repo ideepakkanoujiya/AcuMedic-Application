@@ -1,5 +1,5 @@
 "use client";
-import { Bot, Users, Video, FileClock, HeartPulse } from 'lucide-react';
+import { Bot, Users, Video, FileText, HeartPulse } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -30,10 +30,10 @@ const features = [
     href: "/health-risk-assessment",
   },
   {
-    icon: <FileClock className="h-8 w-8 text-primary" />,
-    title: "Medical Reports",
-    description: "All your medical history and reports, securely stored and accessible anytime.",
-    href: "/dashboard",
+    icon: <FileText className="h-8 w-8 text-primary" />,
+    title: "Report Summarizer",
+    description: "Translate complex lab reports into simple, easy-to-understand language.",
+    href: "/report-summarizer",
   },
 ];
 
