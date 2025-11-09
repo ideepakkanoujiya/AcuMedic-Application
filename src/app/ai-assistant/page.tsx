@@ -55,19 +55,20 @@ export default function AiAssistantPage() {
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const inputRef = useRef<HTMLInputElement>(null);
-
+  
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
+  // Ref to hold the latest input value to avoid stale closures in recognition event handlers
+  const finalTranscriptRef = useRef('');
 
-  const handleSendMessage = useCallback(async (isVoiceInput: boolean = false) => {
-    const currentInput = inputRef.current?.value;
-    if (!currentInput || currentInput.trim() === '' || isLoading) return;
+  const handleSendMessage = useCallback(async (text: string, isVoiceInput: boolean = false) => {
+    if (!text || text.trim() === '' || isLoading) return;
 
-    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: currentInput };
+    const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: text };
     setMessages(prev => [...prev, userMessage]);
     
     setInput('');
+    finalTranscriptRef.current = '';
     setIsLoading(true);
 
     const thinkingMessage: Message = { id: (Date.now() + 1).toString(), sender: 'bot', text: '...', isThinking: true };
@@ -75,8 +76,8 @@ export default function AiAssistantPage() {
 
     try {
       const result = await aiSymptomChecker({
-        symptoms: currentInput,
-        voiceInput: isVoiceInput ? currentInput : undefined,
+        symptoms: text,
+        voiceInput: isVoiceInput ? text : undefined,
       });
       
       const botResponse: Message = {
@@ -109,32 +110,39 @@ export default function AiAssistantPage() {
     // @ts-ignore
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
 
-      recognitionRef.current.onresult = (event: any) => {
-        let finalTranscript = '';
+      recognition.onresult = (event: any) => {
         let interimTranscript = '';
+        finalTranscriptRef.current = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
+            finalTranscriptRef.current += event.results[i][0].transcript;
           } else {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        setInput(finalTranscript || interimTranscript);
+        setInput(finalTranscriptRef.current || interimTranscript);
       };
 
-      recognitionRef.current.onend = () => {
+      recognition.onend = () => {
         setIsRecording(false);
-        // Using a short timeout to ensure the final transcript is set before sending
-        setTimeout(() => {
-            if (inputRef.current?.value && inputRef.current.value.trim().length > 0) {
-              handleSendMessage(true);
-            }
-        }, 100);
+        // Use the ref for the most up-to-date transcript
+        if (finalTranscriptRef.current && finalTranscriptRef.current.trim().length > 0) {
+            handleSendMessage(finalTranscriptRef.current, true);
+        }
       };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+        console.warn("Speech Recognition not supported by this browser.");
     }
   }, [handleSendMessage]);
 
@@ -150,9 +158,9 @@ export default function AiAssistantPage() {
 
     if (isRecording) {
       recognitionRef.current.stop();
-      setIsRecording(false);
     } else {
       setInput('');
+      finalTranscriptRef.current = '';
       recognitionRef.current.start();
       setIsRecording(true);
     }
@@ -189,20 +197,19 @@ export default function AiAssistantPage() {
         >
           <div className="relative">
             <Input
-              ref={inputRef}
               type="text"
               placeholder={isRecording ? "Listening..." : "Ask me anything about your health..."}
               className="h-12 pr-28"
               value={input}
               onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+              onKeyDown={e => e.key === 'Enter' && handleSendMessage(input)}
               disabled={isLoading}
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={handleMicClick} disabled={isLoading}>
                 <Mic className={cn("h-5 w-5", isRecording ? "text-destructive animate-pulse" : "")} />
               </Button>
-              <Button size="icon" onClick={() => handleSendMessage()} disabled={!input.trim() || isLoading}>
+              <Button size="icon" onClick={() => handleSendMessage(input)} disabled={!input.trim() || isLoading}>
                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
@@ -212,5 +219,3 @@ export default function AiAssistantPage() {
     </div>
   );
 }
-
-    

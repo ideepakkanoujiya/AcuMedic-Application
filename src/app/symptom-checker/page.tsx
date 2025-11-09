@@ -189,14 +189,14 @@ export default function SymptomCheckerPage() {
     // @ts-ignore
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = language;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = language;
 
-      recognitionRef.current.onresult = (event: any) => {
-        let finalTranscript = '';
+      recognition.onresult = (event: any) => {
         let interimTranscript = '';
+        let finalTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript;
@@ -207,9 +207,18 @@ export default function SymptomCheckerPage() {
         setSymptoms(finalTranscript || interimTranscript);
       };
 
-      recognitionRef.current.onend = () => {
+      recognition.onend = () => {
         setIsRecording(false);
       };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+        setIsRecording(false);
+      };
+      
+      recognitionRef.current = recognition;
+    } else {
+        console.warn("Speech Recognition not supported by this browser.");
     }
   }, [language]);
 
@@ -225,7 +234,6 @@ export default function SymptomCheckerPage() {
 
     if (isRecording) {
       recognitionRef.current.stop();
-      setIsRecording(false);
     } else {
       setSymptoms('');
       recognitionRef.current.start();
@@ -266,8 +274,10 @@ export default function SymptomCheckerPage() {
     } finally {
       setIsLoading(false);
       if (isRecording) {
-        recognitionRef.current.stop();
-        setIsRecording(false);
+        // This check is to ensure stop is only called on an active recognition
+        if (recognitionRef.current && isRecording) {
+            recognitionRef.current.stop();
+        }
       }
     }
   };
@@ -393,5 +403,3 @@ export default function SymptomCheckerPage() {
     </div>
   );
 }
-
-    
