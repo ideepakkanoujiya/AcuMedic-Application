@@ -158,7 +158,7 @@ export default function Hero() {
                         onFocus={() => setPopoverOpen(true)}
                         aria-label="Search symptoms, doctors or specialties"
                       />
-                       <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10">
+                       <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 transform transition-transform duration-300 hover:scale-105">
                         Search
                       </Button>
                     </form>

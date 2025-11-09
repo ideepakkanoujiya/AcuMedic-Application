@@ -129,10 +129,10 @@ export default function Header({className}: {className?: string}) {
             </DropdownMenu>
           ) : (
              <>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="transition-colors">
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="transition-transform duration-300 hover:scale-105">
                 <Link href="/signup">Sign Up</Link>
               </Button>
              </>

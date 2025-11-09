@@ -158,7 +158,7 @@ export default function DoctorsPage() {
       >
         {filteredDoctors.map((doctor, index) => (
           <motion.div key={index} variants={itemVariants}>
-            <Card className="h-full flex flex-col overflow-hidden hover:border-primary transition-all shadow-md hover:shadow-primary/10">
+            <Card className="h-full flex flex-col overflow-hidden hover:border-primary transition-all shadow-md hover:shadow-primary/10 hover:-translate-y-1 transform duration-300">
               <CardContent className="p-6 text-center flex flex-col flex-grow">
                  <Image
                     src={doctor.photoUrl}
@@ -192,7 +192,7 @@ export default function DoctorsPage() {
                       ))}
                     </div>
                   </div>
-                  <Button className="w-full" asChild>
+                  <Button className="w-full transition-transform duration-300 hover:scale-105" asChild>
                     <Link href="/book">Book Appointment</Link>
                   </Button>
                 </div>

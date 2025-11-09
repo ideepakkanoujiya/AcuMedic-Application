@@ -10,10 +10,10 @@ export default function CallToAction() {
           Experience a smarter, simpler way to manage your healthcare. Get started with our AI assistant or find the right doctor for you today.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-          <Button size="lg" asChild>
+          <Button size="lg" asChild className="transition-transform duration-300 hover:scale-105">
             <Link href="/symptom-checker">Start AI Symptom Check</Link>
           </Button>
-          <Button size="lg" variant="outline" asChild>
+          <Button size="lg" variant="outline" asChild className="transition-transform duration-300 hover:scale-105">
             <Link href="/doctors">Find a Doctor</Link>
           </Button>
         </div>
