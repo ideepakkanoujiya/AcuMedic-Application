@@ -15,7 +15,8 @@ import { z } from 'genkit';
 const PredictiveHealthRiskInputSchema = z.object({
   age: z.number().describe('The age of the user in years.'),
   gender: z.enum(['male', 'female', 'other']).describe('The gender of the user.'),
-  bmi: z.number().describe('The Body Mass Index (BMI) of the user.'),
+  heightCm: z.number().describe('The height of the user in centimeters.'),
+  weightKg: z.number().describe('The weight of the user in kilograms.'),
   bloodPressure: z.object({
     systolic: z.number().describe('Systolic blood pressure (e.g., 120).'),
     diastolic: z.number().describe('Diastolic blood pressure (e.g., 80).'),
@@ -60,7 +61,16 @@ export async function predictHealthRisk(input: PredictiveHealthRiskInput): Promi
 
 const prompt = ai.definePrompt({
   name: 'predictHealthRiskPrompt',
-  input: { schema: PredictiveHealthRiskInputSchema },
+  input: { schema: z.object({
+    bmi: z.number(),
+    age: z.number(),
+    gender: z.string(),
+    bloodPressure: z.object({ systolic: z.number(), diastolic: z.number() }),
+    cholesterol: z.object({ total: z.number(), hdl: z.number() }),
+    hasDiabetes: z.boolean(),
+    isSmoker: z.boolean(),
+    weeklyExercise: z.number(),
+  }) },
   output: { schema: PredictiveHealthRiskOutputSchema },
   prompt: `You are a sophisticated AI health risk modeling engine. Based on the following user data, act as a cardiologist and endocrinologist to calculate the 10-year risk percentages for developing Heart Disease, Type 2 Diabetes, and Stroke.
 
@@ -91,7 +101,16 @@ const predictHealthRiskFlow = ai.defineFlow(
     outputSchema: PredictiveHealthRiskOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
+    // Calculate BMI from height and weight
+    const heightInMeters = input.heightCm / 100;
+    const bmi = parseFloat((input.weightKg / (heightInMeters * heightInMeters)).toFixed(1));
+
+    const promptInput = {
+        ...input,
+        bmi,
+    }
+
+    const { output } = await prompt(promptInput);
     return output!;
   }
 );

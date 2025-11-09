@@ -33,7 +33,8 @@ import { Badge } from '@/components/ui/badge';
 const formSchema = z.object({
   age: z.coerce.number().min(18, 'Age must be at least 18').max(100),
   gender: z.enum(['male', 'female', 'other']),
-  bmi: z.coerce.number().min(10, 'BMI seems too low').max(50, 'BMI seems too high'),
+  heightCm: z.coerce.number().min(100, 'Height must be at least 100cm').max(250, 'Height seems too high'),
+  weightKg: z.coerce.number().min(30, 'Weight must be at least 30kg').max(250, 'Weight seems too high'),
   systolic: z.coerce.number().min(70).max(250),
   diastolic: z.coerce.number().min(40).max(150),
   totalCholesterol: z.coerce.number().min(100).max(400),
@@ -135,7 +136,8 @@ export default function HealthRiskAssessmentPage() {
     defaultValues: {
       age: 35,
       gender: 'male',
-      bmi: 24.5,
+      heightCm: 175,
+      weightKg: 75,
       systolic: 120,
       diastolic: 80,
       totalCholesterol: 200,
@@ -153,7 +155,8 @@ export default function HealthRiskAssessmentPage() {
       const result = await predictHealthRisk({
         age: data.age,
         gender: data.gender,
-        bmi: data.bmi,
+        heightCm: data.heightCm,
+        weightKg: data.weightKg,
         bloodPressure: { systolic: data.systolic, diastolic: data.diastolic },
         cholesterol: { total: data.totalCholesterol, hdl: data.hdl },
         hasDiabetes: data.hasDiabetes,
@@ -230,13 +233,24 @@ export default function HealthRiskAssessmentPage() {
                       </FormItem>
                     )} />
                   </div>
-                  <FormField control={form.control} name="bmi" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Body Mass Index (BMI)</FormLabel>
-                      <FormControl><Input type="number" step="0.1" placeholder="e.g., 24.5" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                  
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="heightCm" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Height (cm)</FormLabel>
+                        <FormControl><Input type="number" placeholder="e.g., 175" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="weightKg" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Weight (kg)</FormLabel>
+                        <FormControl><Input type="number" placeholder="e.g., 75" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  
                    <div className="space-y-2">
                       <FormLabel>Blood Pressure (Systolic/Diastolic)</FormLabel>
                       <div className="grid grid-cols-2 gap-4">
