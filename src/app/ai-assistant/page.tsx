@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Bot, Mic, Send, User, Loader2 } from 'lucide-react';
 import { aiSymptomChecker } from '@/ai/flows/ai-symptom-checker';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface Message {
   id: string;
@@ -55,6 +56,58 @@ export default function AiAssistantPage() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+
+      recognitionRef.current.onresult = (event: any) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setInput(prev => prev + finalTranscript);
+        }
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+        if(input.trim()){
+            handleSendMessage(true);
+        }
+      };
+    }
+  }, [input]);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+        toast({
+            variant: "destructive",
+            title: "Voice input not supported",
+            description: "Your browser does not support voice recognition.",
+        });
+        return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      setInput('');
+      recognitionRef.current.start();
+    }
+    setIsRecording(!isRecording);
+  };
+
+
   useEffect(() => {
     setMessages([
         { id: 'initial-1', sender: 'bot', text: "Hello! I'm your conversational AI Health Assistant, AcuMedic." },
@@ -68,8 +121,8 @@ export default function AiAssistantPage() {
     }
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (input.trim() === '' || isLoading) return;
+  const handleSendMessage = async (isVoiceInput: boolean = false) => {
+    if (input.trim() === '' || (isLoading && !isVoiceInput)) return;
 
     const userMessage: Message = { id: Date.now().toString(), sender: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
@@ -84,6 +137,7 @@ export default function AiAssistantPage() {
     try {
       const result = await aiSymptomChecker({
         symptoms: currentInput,
+        voiceInput: isVoiceInput ? currentInput : undefined,
       });
       
       const botResponse: Message = {
@@ -130,18 +184,18 @@ export default function AiAssistantPage() {
           <div className="relative">
             <Input
               type="text"
-              placeholder="Ask me anything about your health..."
+              placeholder={isRecording ? "Listening..." : "Ask me anything about your health..."}
               className="h-12 pr-28"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-              disabled={isLoading}
+              disabled={isLoading || isRecording}
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <Button variant="ghost" size="icon" disabled={isLoading}>
-                <Mic className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={handleMicClick} disabled={isLoading}>
+                <Mic className={cn("h-5 w-5", isRecording ? "text-destructive" : "")} />
               </Button>
-              <Button size="icon" onClick={handleSendMessage} disabled={!input.trim() || isLoading}>
+              <Button size="icon" onClick={() => handleSendMessage()} disabled={!input.trim() || isLoading}>
                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>

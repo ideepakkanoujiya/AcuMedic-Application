@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertCircle, Bot, ImagePlus, Loader2, X, Phone, Calendar, Video } from 'lucide-react';
+import { AlertCircle, Bot, ImagePlus, Loader2, X, Phone, Calendar, Video, Mic } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { aiSymptomChecker, AISymptomCheckerOutput } from '@/ai/flows/ai-symptom-checker';
 import { cn } from '@/lib/utils';
@@ -184,6 +184,56 @@ export default function SymptomCheckerPage() {
   const { toast } = useToast();
   const { language } = useContext(LanguageContext);
 
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = language;
+
+      recognitionRef.current.onresult = (event: any) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        setSymptoms(prev => prev + finalTranscript);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+      };
+    }
+  }, [language]);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+        toast({
+            variant: "destructive",
+            title: "Voice input not supported",
+            description: "Your browser does not support voice recognition.",
+        });
+        return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+    setIsRecording(!isRecording);
+  };
+
+
   const handleAnalysis = async () => {
     if (symptoms.trim() === '') {
       toast({
@@ -201,6 +251,7 @@ export default function SymptomCheckerPage() {
         symptoms: symptoms,
         image: imagePreview ?? undefined,
         language: language,
+        voiceInput: isRecording ? symptoms : undefined
       });
 
       setAnalysis(result);
@@ -214,6 +265,10 @@ export default function SymptomCheckerPage() {
       });
     } finally {
       setIsLoading(false);
+      if (isRecording) {
+        recognitionRef.current.stop();
+        setIsRecording(false);
+      }
     }
   };
   
@@ -271,13 +326,18 @@ export default function SymptomCheckerPage() {
                         <CardDescription>Provide as much detail as possible for a more accurate analysis.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Textarea 
-                            placeholder="e.g., I have a high fever, a sore throat, and a persistent cough..."
-                            className="min-h-[150px] text-base"
-                            value={symptoms}
-                            onChange={e => setSymptoms(e.target.value)}
-                            disabled={isLoading || !!analysis}
-                        />
+                        <div className="relative">
+                            <Textarea 
+                                placeholder="e.g., I have a high fever, a sore throat, and a persistent cough..."
+                                className="min-h-[150px] text-base pr-12"
+                                value={symptoms}
+                                onChange={e => setSymptoms(e.target.value)}
+                                disabled={isLoading || !!analysis}
+                            />
+                            <Button variant="ghost" size="icon" className={cn("absolute right-2 bottom-2", isRecording ? "text-destructive" : "")} onClick={handleMicClick} disabled={isLoading || !!analysis}>
+                                <Mic className="h-5 w-5" />
+                            </Button>
+                        </div>
 
                         {imagePreview ? (
                           <div className="relative w-full h-40 p-1 border rounded-md">

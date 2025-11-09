@@ -60,7 +60,7 @@ If the user asks a general question, provide a clear, helpful, and conversationa
 Patient Query: {{{symptoms}}}
 
 {{#if language}}Language: {{{language}}}{{/if}}
-{{#if voiceInput}}Voice Input: {{{voiceInput}}}{{/if}}
+{{#if voiceInput}}The user provided this input via voice: {{{voiceInput}}}{{/if}}
 {{#if image}}
 Also analyze the following image in conjunction with the query.
 Image: {{media url=image}}
