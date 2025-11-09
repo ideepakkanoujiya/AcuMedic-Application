@@ -58,7 +58,6 @@ export default function AiAssistantPage() {
   
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
-  // Ref to hold the latest input value to avoid stale closures in recognition event handlers
   const finalTranscriptRef = useRef('');
 
   const handleSendMessage = useCallback(async (text: string, isVoiceInput: boolean = false) => {
@@ -107,6 +106,7 @@ export default function AiAssistantPage() {
   }, [isLoading, toast]);
 
   useEffect(() => {
+    // This effect should run only once to initialize speech recognition.
     // @ts-ignore
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
@@ -116,20 +116,21 @@ export default function AiAssistantPage() {
 
       recognition.onresult = (event: any) => {
         let interimTranscript = '';
-        finalTranscriptRef.current = '';
+        let finalTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
-            finalTranscriptRef.current += event.results[i][0].transcript;
+            finalTranscript += event.results[i][0].transcript;
           } else {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        setInput(finalTranscriptRef.current || interimTranscript);
+        finalTranscriptRef.current = finalTranscript;
+        setInput(finalTranscript || interimTranscript);
       };
 
       recognition.onend = () => {
         setIsRecording(false);
-        // Use the ref for the most up-to-date transcript
+        // Use the ref for the most up-to-date transcript to avoid stale state
         if (finalTranscriptRef.current && finalTranscriptRef.current.trim().length > 0) {
             handleSendMessage(finalTranscriptRef.current, true);
         }
@@ -139,29 +140,30 @@ export default function AiAssistantPage() {
         toast({
             variant: "destructive",
             title: "Voice Recognition Error",
-            description: `An error occurred: ${event.error}. Please check your connection or browser permissions.`,
+            description: `An error occurred: ${event.error}. Please check your microphone or browser permissions.`,
         });
+        console.error("Speech recognition error", event.error);
         setIsRecording(false);
       };
 
       recognitionRef.current = recognition;
     } else {
-        console.warn("Speech Recognition not supported by this browser.");
-    }
-  }, [handleSendMessage, toast]);
-
-  const handleMicClick = () => {
-    if (!recognitionRef.current) {
         toast({
             variant: "destructive",
-            title: "Voice input not supported",
+            title: "Unsupported Browser",
             description: "Your browser does not support voice recognition.",
         });
-        return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures this runs only ONCE.
+
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return;
 
     if (isRecording) {
       recognitionRef.current.stop();
+      setIsRecording(false);
     } else {
       setInput('');
       finalTranscriptRef.current = '';

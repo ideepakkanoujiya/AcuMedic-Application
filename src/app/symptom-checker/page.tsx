@@ -192,7 +192,6 @@ export default function SymptomCheckerPage() {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.lang = language;
 
       recognition.onresult = (event: any) => {
         let interimTranscript = '';
@@ -215,26 +214,31 @@ export default function SymptomCheckerPage() {
         toast({
             variant: "destructive",
             title: "Voice Recognition Error",
-            description: `An error occurred: ${event.error}. Please check your connection or browser permissions.`,
+            description: `An error occurred: ${event.error}. Please check your microphone or browser permissions.`,
         });
+        console.error("Speech recognition error", event.error);
         setIsRecording(false);
       };
       
       recognitionRef.current = recognition;
     } else {
-        console.warn("Speech Recognition not supported by this browser.");
-    }
-  }, [language, toast]);
-
-  const handleMicClick = () => {
-    if (!recognitionRef.current) {
         toast({
             variant: "destructive",
-            title: "Voice input not supported",
+            title: "Unsupported Browser",
             description: "Your browser does not support voice recognition.",
         });
-        return;
     }
+  }, [toast]);
+  
+  useEffect(() => {
+    if(recognitionRef.current) {
+      recognitionRef.current.lang = language;
+    }
+  }, [language]);
+
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return;
 
     if (isRecording) {
       recognitionRef.current.stop();
@@ -278,8 +282,7 @@ export default function SymptomCheckerPage() {
     } finally {
       setIsLoading(false);
       if (isRecording) {
-        // This check is to ensure stop is only called on an active recognition
-        if (recognitionRef.current && isRecording) {
+        if (recognitionRef.current) {
             recognitionRef.current.stop();
         }
       }
