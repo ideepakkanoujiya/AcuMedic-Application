@@ -27,6 +27,7 @@ import {
 
 const navLinks = [
   { href: "/symptom-checker", label: "Symptom Checker" },
+  { href: "/health-risk-assessment", label: "Risk Assessment" },
   { href: "/ai-assistant", label: "AI Assistant" },
   { href: "/doctors", label: "Find a Doctor" },
   { href: "/dashboard", label: "My Dashboard", auth: true },
