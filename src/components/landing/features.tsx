@@ -18,6 +18,12 @@ const features = [
     href: "/queue",
   },
   {
+    icon: <Bot className="h-8 w-8 text-primary" />,
+    title: "AcuMedic Assistant",
+    description: "Ask any health question, anytime. Get instant, helpful answers from our AI.",
+    href: "/ai-assistant",
+  },
+  {
     icon: <Video className="h-8 w-8 text-primary" />,
     title: "Tele-Consultations",
     description: "Connect with top doctors from the comfort of your home via secure video.",
