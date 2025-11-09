@@ -27,7 +27,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${manrope.variable} font-body antialiased`} suppressHydrationWarning={true}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
