@@ -14,8 +14,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { doc, getDoc } from 'firebase/firestore';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -89,8 +88,8 @@ export default function LoginPage() {
           email: user.email,
           phone: user.phoneNumber || '',
         };
-        // Use non-blocking write
-        setDocumentNonBlocking(userDocRef, userData, { merge: true });
+        // Use blocking write here as it's part of the initial sign-in flow
+        await setDoc(userDocRef, userData, { merge: true });
       }
 
       toast({
@@ -192,5 +191,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

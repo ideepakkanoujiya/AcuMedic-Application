@@ -11,8 +11,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -72,8 +71,8 @@ export default function SignupPage() {
         email: data.email,
         phone: '', // Initially empty
       };
-      // Use non-blocking write
-      setDocumentNonBlocking(userDocRef, userData, { merge: true });
+      // Use blocking write as it's part of the initial sign-up flow
+      await setDoc(userDocRef, userData, { merge: true });
 
       toast({
         title: 'Account Created',
@@ -113,8 +112,8 @@ export default function SignupPage() {
           email: user.email,
           phone: user.phoneNumber || '',
         };
-        // Use non-blocking write
-        setDocumentNonBlocking(userDocRef, userData, { merge: true });
+        // Use blocking write here as it's part of the initial sign-in flow
+        await setDoc(userDocRef, userData, { merge: true });
       }
 
       toast({
@@ -244,5 +243,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
