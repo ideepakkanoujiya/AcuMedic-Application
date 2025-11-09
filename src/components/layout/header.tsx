@@ -23,6 +23,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 
 const navLinks = [
@@ -90,6 +91,8 @@ export default function Header({className}: {className?: string}) {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <ThemeToggle />
           
           {isUserLoading ? (
             <div className="h-8 w-24 animate-pulse rounded-md bg-muted" />
