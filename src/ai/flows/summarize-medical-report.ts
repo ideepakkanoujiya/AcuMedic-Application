@@ -14,8 +14,13 @@ import {z} from 'genkit';
 const SummarizeMedicalReportInputSchema = z.object({
   reportText: z
     .string()
-    .min(50, { message: 'Report text must be at least 50 characters long.' })
     .describe('The full text content of the medical report to be summarized.'),
+  reportImage: z
+    .string()
+    .optional()
+    .describe(
+      "An image of the medical report, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'. The AI will perform OCR on this image."
+    ),
 });
 export type SummarizeMedicalReportInput = z.infer<
   typeof SummarizeMedicalReportInputSchema
@@ -33,6 +38,9 @@ export type SummarizeMedicalReportOutput = z.infer<
 export async function summarizeMedicalReport(
   input: SummarizeMedicalReportInput
 ): Promise<SummarizeMedicalReportOutput> {
+  if (!input.reportText && !input.reportImage) {
+    throw new Error('Either report text or an image must be provided.');
+  }
   return summarizeMedicalReportFlow(input);
 }
 
@@ -40,15 +48,21 @@ const summarizeMedicalReportPrompt = ai.definePrompt({
   name: 'summarizeMedicalReportPrompt',
   input: {schema: SummarizeMedicalReportInputSchema},
   output: {schema: SummarizeMedicalReportOutputSchema},
-  prompt: `You are an expert medical communicator. Your task is to read a complex medical report and translate it into simple, easy-to-understand language for a patient. Avoid all medical jargon.
+  prompt: `You are an expert medical communicator with OCR capabilities. Your task is to read a complex medical report—either from text or an image—and translate it into simple, easy-to-understand language for a patient. Avoid all medical jargon.
 
   **Instructions:**
-  1.  **Simplify the Findings**: Read the report below and generate a 'simplifiedSummary' that explains the key results clearly.
-  2.  **Extract Key Points**: Identify the 3-5 most critical 'keyTakeaways' and list them as bullet points.
-  3.  **Suggest Next Steps**: Provide a gentle and clear recommendation for the 'nextSteps'.
+  1.  **Analyze the Input**: Prioritize the image if provided; otherwise, use the text. Perform OCR on the image to extract the report content.
+  2.  **Simplify the Findings**: Generate a 'simplifiedSummary' that explains the key results clearly.
+  3.  **Extract Key Points**: Identify the 3-5 most critical 'keyTakeaways' and list them as bullet points.
+  4.  **Suggest Next Steps**: Provide a gentle and clear recommendation for the 'nextSteps'.
 
+  {{#if reportImage}}
+  **Medical Report Image:**
+  {{media url=reportImage}}
+  {{else}}
   **Medical Report Text:**
   {{{reportText}}}
+  {{/if}}
   `,
 });
 

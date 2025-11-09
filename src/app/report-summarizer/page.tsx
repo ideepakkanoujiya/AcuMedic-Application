@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, FileText, Wand2, ArrowRight, Lightbulb } from 'lucide-react';
+import { Loader2, FileText, Wand2, ArrowRight, Lightbulb, ImagePlus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeMedicalReport, SummarizeMedicalReportOutput } from '@/ai/flows/summarize-medical-report';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -47,14 +48,16 @@ export default function ReportSummarizerPage() {
   const [reportText, setReportText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [summary, setSummary] = useState<SummarizeMedicalReportOutput | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleSummarize = async () => {
-    if (reportText.trim().length < 50) {
+    if (reportText.trim().length < 20 && !imagePreview) {
       toast({
         variant: "destructive",
-        title: "Input Too Short",
-        description: "Please paste more content from your report for an accurate summary.",
+        title: "Input Required",
+        description: "Please paste text from your report or upload an image to get a summary.",
       });
       return;
     }
@@ -63,7 +66,10 @@ export default function ReportSummarizerPage() {
     setSummary(null);
 
     try {
-      const result = await summarizeMedicalReport({ reportText });
+      const result = await summarizeMedicalReport({ 
+        reportText: reportText,
+        reportImage: imagePreview ?? undefined
+       });
       setSummary(result);
     } catch (error: any) {
       console.error("Error summarizing report:", error);
@@ -77,10 +83,31 @@ export default function ReportSummarizerPage() {
     }
   };
   
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const removeImage = () => {
+    setImagePreview(null);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  };
+
   const handleReset = () => {
     setReportText('');
     setSummary(null);
+    removeImage();
   };
+
+  const canSubmit = (reportText.trim().length > 0 || !!imagePreview) && !isLoading;
 
   return (
     <div className="container mx-auto py-8 md:py-12">
@@ -92,7 +119,7 @@ export default function ReportSummarizerPage() {
       >
         <h1 className="text-3xl md:text-4xl font-bold mb-2 font-headline">Layman's Report Summarizer</h1>
         <p className="text-muted-foreground mb-8">
-          Paste your medical report text below to get a simple, AI-powered summary you can actually understand.
+          Paste your medical report text or upload an image to get a simple, AI-powered summary you can actually understand.
         </p>
       </motion.div>
 
@@ -104,22 +131,42 @@ export default function ReportSummarizerPage() {
         >
           <Card className="shadow-lg sticky top-24">
             <CardHeader>
-              <CardTitle>Paste Your Report</CardTitle>
-              <CardDescription>Copy the text from your lab report or doctor's notes and paste it here.</CardDescription>
+              <CardTitle>Paste or Upload Your Report</CardTitle>
+              <CardDescription>Copy text from your lab report or upload an image of it.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Textarea
-                placeholder="e.g., CBC revealed WBC at 11.2 x 10^9/L (Ref: 4.5-11.0)..."
-                className="min-h-[300px] text-base"
-                value={reportText}
-                onChange={e => setReportText(e.target.value)}
-                disabled={isLoading || !!summary}
-              />
+              <div className="space-y-4">
+                <Textarea
+                  placeholder="e.g., CBC revealed WBC at 11.2 x 10^9/L (Ref: 4.5-11.0)..."
+                  className="min-h-[200px] text-base"
+                  value={reportText}
+                  onChange={e => setReportText(e.target.value)}
+                  disabled={isLoading || !!summary}
+                />
+
+                {imagePreview ? (
+                  <div className="relative w-full h-40 p-1 border rounded-md">
+                      <Image src={imagePreview} alt="Preview" layout="fill" className="object-contain rounded-md" />
+                      {!summary && 
+                        <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 z-10 rounded-full" onClick={removeImage} disabled={isLoading}>
+                            <X className="h-4 w-4"/>
+                        </Button>
+                      }
+                  </div>
+                ) : (
+                  <Button variant="outline" className="w-full" onClick={() => fileInputRef.current?.click()} disabled={isLoading || !!summary}>
+                      <ImagePlus className="mr-2 h-4 w-4" />
+                      Upload Report Image
+                  </Button>
+                )}
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+
+              </div>
               <div className="mt-4">
                 {summary ? (
                     <Button onClick={handleReset} variant="outline" className="w-full">Summarize Another Report</Button>
                 ) : (
-                    <Button onClick={handleSummarize} disabled={!reportText.trim() || isLoading} className="w-full" size="lg">
+                    <Button onClick={handleSummarize} disabled={!canSubmit} className="w-full" size="lg">
                       {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <><Wand2 className="mr-2 h-5 w-5" />Summarize It</>}
                     </Button>
                 )}
