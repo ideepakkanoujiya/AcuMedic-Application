@@ -30,6 +30,7 @@ import { predictHealthRisk, PredictiveHealthRiskOutput } from '@/ai/flows/predic
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const formSchema = z.object({
   age: z.coerce.number().min(18, 'Age must be at least 18').max(100),
@@ -58,16 +59,19 @@ const RiskResultDisplay = ({ results }: { results: PredictiveHealthRiskOutput })
     }
   };
   
-  const getRiskBadgeVariant = (level: string): "default" | "secondary" | "destructive" => {
-    switch (level) {
-      case 'low': return 'default';
-      case 'moderate': return 'secondary';
-      case 'high':
-      case 'very-high':
-        return 'destructive';
-      default: return 'default';
+  const getRiskBadgeVariant = (level: string): "secondary" | "destructive" | "default" => {
+    switch (level.toLowerCase()) {
+        case 'low':
+            return 'default';
+        case 'moderate':
+            return 'secondary';
+        case 'high':
+        case 'very-high':
+            return 'destructive';
+        default:
+            return 'default';
     }
-  }
+}
 
 
   return (
@@ -91,7 +95,9 @@ const RiskResultDisplay = ({ results }: { results: PredictiveHealthRiskOutput })
                 <span className="font-medium">{risk.condition}</span>
                 <Badge 
                     variant={getRiskBadgeVariant(risk.level)}
-                    className="capitalize"
+                    className={cn("capitalize", 
+                      getRiskBadgeVariant(risk.level) === 'default' && 'bg-accent text-accent-foreground'
+                    )}
                 >
                     {risk.level.replace('-', ' ')}
                 </Badge>
@@ -134,7 +140,7 @@ const RiskResultDisplay = ({ results }: { results: PredictiveHealthRiskOutput })
         </CardHeader>
         <CardContent>
           <p className="text-foreground/80">{results.overallSummary}</p>
-          <Button className="mt-4 w-full" asChild><a href="/doctors">Find a Specialist</a></Button>
+          <Button className="mt-4 w-full" asChild><Link href="/doctors">Find a Specialist</Link></Button>
         </CardContent>
       </Card>
     </motion.div>
@@ -340,7 +346,7 @@ export default function HealthRiskAssessmentPage() {
             <RiskResultDisplay results={results} />
           ) : (
             <Card className="flex flex-col items-center justify-center text-center py-12 px-6 min-h-[400px] shadow-lg bg-gradient-to-br from-card to-muted/30">
-              <img src="/images/placeholder/dna-strand.svg" alt="Health Prediction" className="h-24 w-24 opacity-20" />
+              <HeartPulse className="mx-auto h-24 w-24 opacity-10" />
               <h3 className="mt-6 text-xl font-semibold">Your Future Health Insights</h3>
               <p className="mt-2 text-muted-foreground max-w-sm">Your personalized risk forecast and recommendations will appear here after you submit your profile.</p>
             </Card>
