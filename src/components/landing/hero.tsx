@@ -154,8 +154,14 @@ export default function Hero() {
                         placeholder="Search symptoms, doctors or specialties..."
                         className="pl-12 pr-4 py-3 h-14 text-base w-full rounded-full shadow-lg transition-all duration-300 focus-visible:shadow-2xl focus-visible:ring-primary/50 focus-visible:ring-2 bg-background/80 backdrop-blur-sm"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onFocus={() => setPopoverOpen(true)}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          if (e.target.value.trim().length > 0) {
+                            setPopoverOpen(true);
+                          } else {
+                            setPopoverOpen(false);
+                          }
+                        }}
                         aria-label="Search symptoms, doctors or specialties"
                       />
                        <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 transform transition-transform duration-300 hover:scale-105">
