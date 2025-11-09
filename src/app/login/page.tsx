@@ -15,6 +15,7 @@ import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-writes';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -70,12 +71,10 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if user document already exists
       const userDocRef = doc(firestore, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
-        // New user, create their document in Firestore
         const displayNameParts = user.displayName?.split(' ') || [];
         const firstName = displayNameParts[0] || 'New';
         const lastName = displayNameParts.slice(1).join(' ') || 'User';
@@ -83,20 +82,19 @@ export default function LoginPage() {
         const userData = {
           id: user.uid,
           role: 'patient',
-          firstName: firstName,
-          lastName: lastName,
+          firstName,
+          lastName,
           email: user.email,
           phone: user.phoneNumber || '',
         };
-        // Use blocking write here as it's part of the initial sign-in flow
-        await setDoc(userDocRef, userData, { merge: true });
+        
+        setDocumentNonBlocking(userDocRef, userData, { merge: true });
       }
 
       toast({
         title: 'Login Successful',
         description: `Welcome, ${user.displayName}!`,
       });
-      // Redirect is handled by useAuthRedirect hook
     } catch (error: any) {
       toast({
         variant: 'destructive',
