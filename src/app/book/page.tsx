@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -33,9 +33,13 @@ const containerVariants = {
 export default function BookingPage() {
   const [step, setStep] = useState(1);
   const [consultType, setConsultType] = useState<'clinic' | 'video'>('clinic');
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, []);
+
   const doctor = {
     name: 'Dr. Emily Carter',
     specialty: 'Cardiologist',
