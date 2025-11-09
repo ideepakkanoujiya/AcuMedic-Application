@@ -34,6 +34,26 @@ const IconMind = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
+const IconRisk = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" 
+        height="24" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="1.5"
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        {...props}
+    >
+        <path d="M3 3v18h18"/>
+        <path d="M7 16V8"/>
+        <path d="M12 16v-5"/>
+        <path d="M17 16v-2"/>
+    </svg>
+);
+
 
 const baseSuggestions = [
     { name: 'Check Symptoms', href: '/symptom-checker', icon: <Bot className="h-5 w-5 text-primary" />, external: false },
@@ -49,8 +69,8 @@ const floatingIcons = [
   { icon: IconMind, className: 'top-[20%] right-[8%] w-14 h-14 stroke-current', duration: 10 },
   { icon: IconHeart, className: 'bottom-[15%] left-[15%] w-12 h-12', duration: 15 },
   { icon: IconMind, className: 'bottom-[10%] right-[12%] w-10 h-10 stroke-current', duration: 9 },
-  { icon: IconHeart, className: 'top-[50%] left-[20%] w-8 h-8', duration: 8 },
-  { icon: IconMind, className: 'top-[60%] right-[25%] w-12 h-12 stroke-current', duration: 14 },
+  { icon: IconRisk, className: 'top-[50%] left-[20%] w-8 h-8 stroke-current', duration: 8 },
+  { icon: IconRisk, className: 'top-[60%] right-[25%] w-12 h-12 stroke-current', duration: 14 },
 ];
 
 export default function Hero() {
