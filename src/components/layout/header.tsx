@@ -59,13 +59,13 @@ export default function Header({className}: {className?: string}) {
   }
 
   return (
-    <div className="sticky top-0 z-50 h-24 w-full">
+    <div className="sticky top-0 z-50 h-24 w-full flex justify-center">
       <motion.header 
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className={cn(
-            "absolute top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-screen-2xl rounded-full border border-border/40 bg-background/80 shadow-lg backdrop-blur-sm", 
+            "absolute top-4 w-[95%] max-w-screen-2xl rounded-full border border-border/40 bg-background/80 shadow-lg backdrop-blur-sm", 
             className
           )}
         >
