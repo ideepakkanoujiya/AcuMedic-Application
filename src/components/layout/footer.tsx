@@ -9,8 +9,8 @@ import { usePathname } from 'next/navigation';
 export default function Footer({className}: {className?: string}) {
   const pathname = usePathname();
 
-  // Do not render footer on the AI assistant page
-  if (pathname === '/ai-assistant') {
+  // Do not render footer on pages that have their own full-screen layouts
+  if (pathname === '/ai-assistant' || pathname.startsWith('/video/')) {
     return null;
   }
 

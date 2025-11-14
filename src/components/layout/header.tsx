@@ -35,6 +35,7 @@ const mainNavLinks = [
 const aiToolsLinks = [
   { href: "/symptom-checker", label: "Symptom Checker" },
   { href: "/health-risk-assessment", label: "Risk Assessment" },
+  { href: "/report-summarizer", label: "Report Summarizer"},
   { href: "/ai-assistant", label: "AI Assistant" },
 ]
 
@@ -57,8 +58,8 @@ export default function Header({className}: {className?: string}) {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
   
-  if (pathname === '/ai-assistant') {
-    return null; // Don't render header on the chat page for a more immersive experience
+  if (pathname === '/ai-assistant' || pathname.startsWith('/video/')) {
+    return null; // Don't render header on the chat page or video page for a more immersive experience
   }
 
   return (
@@ -147,7 +148,7 @@ export default function Header({className}: {className?: string}) {
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard">Dashboard</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                   <DropdownMenuItem asChild>
                     <Link href="/dashboard?tab=profile">Profile Settings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
