@@ -22,97 +22,122 @@ const itemVariants = {
   },
 };
 
-const queuePatients = [
+const initialQueuePatients = [
     { name: "Ananya Sharma", eta: 2, avatar: "https://i.pravatar.cc/150?img=1" },
     { name: "Vikram Singh", eta: 8, avatar: "https://i.pravatar.cc/150?img=2" },
     { name: "Priya Patel", eta: 15, avatar: "https://i.pravatar.cc/150?img=3" },
 ];
 
 const allPatients = [
-    { name: "Aarav Sen", lastVisit: "2024-06-28", avatar: "https://i.pravatar.cc/150?img=4" },
-    { name: "Meera Varma", lastVisit: "2024-06-28", avatar: "https://i.pravatar.cc/150?img=5" },
-    { name: "Ananya Sharma", lastVisit: "2024-06-27", avatar: "https://i.pravatar.cc/150?img=1" },
-    { name: "Vikram Singh", lastVisit: "2024-06-26", avatar: "https://i.pravatar.cc/150?img=2" },
-    { name: "Priya Patel", lastVisit: "2024-06-25", avatar: "https://i.pravatar.cc/150?img=3" },
-    { name: "Rohan Joshi", lastVisit: "2024-06-22", avatar: "https://i.pravatar.cc/150?img=6" },
+    { id: 'pat1', name: "Aarav Sen", lastVisit: "2024-06-28", avatar: "https://i.pravatar.cc/150?img=4" },
+    { id: 'pat2', name: "Meera Varma", lastVisit: "2024-06-28", avatar: "https://i.pravatar.cc/150?img=5" },
+    { id: 'pat3', name: "Ananya Sharma", lastVisit: "2024-06-27", avatar: "https://i.pravatar.cc/150?img=1" },
+    { id: 'pat4', name: "Vikram Singh", lastVisit: "2024-06-26", avatar: "https://i.pravatar.cc/150?img=2" },
+    { id: 'pat5', name: "Priya Patel", lastVisit: "2024-06-25", avatar: "https://i.pravatar.cc/150?img=3" },
+    { id: 'pat6', name: "Rohan Joshi", lastVisit: "2024-06-22", avatar: "https://i.pravatar.cc/150?img=6" },
 ];
 
-const TodaysView = () => (
-    <div className="grid lg:grid-cols-3 gap-8 mt-6">
-        <div className="lg:col-span-2 space-y-8">
-            <motion.div variants={itemVariants}>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><CalendarIcon /> Today's Appointments</CardTitle>
-                        <CardDescription>You have 5 appointments scheduled for today.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div className="flex items-center gap-3">
-                                 <Avatar>
-                                    <AvatarImage src="https://i.pravatar.cc/150?img=4" />
-                                    <AvatarFallback>AS</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-bold">Aarav Sen</p>
-                                    <p className="text-sm text-muted-foreground">11:00 AM - Video Consultation</p>
+const TodaysView = () => {
+    const [queue, setQueue] = useState(initialQueuePatients);
+
+    const handleCallNext = () => {
+        setQueue(prevQueue => prevQueue.slice(1));
+    };
+    
+    return (
+        <div className="grid lg:grid-cols-3 gap-8 mt-6">
+            <div className="lg:col-span-2 space-y-8">
+                <motion.div variants={itemVariants}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><CalendarIcon /> Today's Appointments</CardTitle>
+                            <CardDescription>You have 5 appointments scheduled for today.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src="https://i.pravatar.cc/150?img=4" />
+                                        <AvatarFallback>AS</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="font-bold">Aarav Sen</p>
+                                        <p className="text-sm text-primary">11:00 AM - Video Consultation</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex gap-2 w-full md:w-auto">
-                                <Button asChild className="flex-1">
-                                    <Link href={`/video/session-aarav-sen`}><Video className="mr-2 h-4 w-4"/>Start Call</Link>
-                                </Button>
-                                <Button variant="outline" className="flex-1">View Details</Button>
-                            </div>
-                        </Card>
-                         <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 opacity-60">
-                            <div className="flex items-center gap-3">
-                                 <Avatar>
-                                    <AvatarImage src="https://i.pravatar.cc/150?img=5" />
-                                    <AvatarFallback>MV</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-bold">Meera Varma</p>
-                                    <p className="text-sm text-muted-foreground">11:30 AM - In-Clinic Visit</p>
+                                <div className="flex gap-2 w-full md:w-auto">
+                                    <Button asChild className="flex-1">
+                                        <Link href={`/video/session-aarav-sen`}><Video className="mr-2 h-4 w-4"/>Start Call</Link>
+                                    </Button>
+                                    <Button variant="outline" className="flex-1">View Details</Button>
                                 </div>
-                            </div>
-                            <Button variant="secondary" disabled>Completed</Button>
-                        </Card>
-                    </CardContent>
-                </Card>
-            </motion.div>
+                            </Card>
+                            <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src="https://i.pravatar.cc/150?img=1" />
+                                        <AvatarFallback>AS</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="font-bold">Ananya Sharma</p>
+                                        <p className="text-sm text-muted-foreground">11:30 AM - In-Clinic Visit</p>
+                                    </div>
+                                </div>
+                                <Button variant="secondary">View Details</Button>
+                            </Card>
+                            <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 opacity-60">
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src="https://i.pravatar.cc/150?img=5" />
+                                        <AvatarFallback>MV</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="font-bold">Meera Varma</p>
+                                        <p className="text-sm text-muted-foreground">10:30 AM - In-Clinic Visit</p>
+                                    </div>
+                                </div>
+                                <Button variant="secondary" disabled>Completed</Button>
+                            </Card>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            </div>
+            <div className="lg:col-span-1 space-y-8">
+                <motion.div variants={itemVariants}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Users /> Live Patient Queue</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {queue.length > 0 ? (
+                                queue.map((patient, index) => (
+                                    <Card key={index} className="p-3 flex justify-between items-center">
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarImage src={patient.avatar} />
+                                                <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-semibold">{patient.name}</p>
+                                                <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> ETA: {patient.eta} min</p>
+                                            </div>
+                                        </div>
+                                        {index === 0 && <Button size="sm" onClick={handleCallNext}>Call Next</Button>}
+                                    </Card>
+                                ))
+                            ) : (
+                                <p className="text-sm text-muted-foreground text-center py-4">The queue is empty.</p>
+                            )}
+                            <Button variant="outline" className="w-full mt-2">
+                                Manage Full Queue
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            </div>
         </div>
-        <div className="lg:col-span-1 space-y-8">
-           <motion.div variants={itemVariants}>
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Users /> Live Patient Queue</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    {queuePatients.map((patient, index) => (
-                        <Card key={index} className="p-3 flex justify-between items-center">
-                             <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src={patient.avatar} />
-                                    <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-semibold">{patient.name}</p>
-                                    <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> ETA: {patient.eta} min</p>
-                                </div>
-                            </div>
-                            {index === 0 && <Button size="sm">Call Next</Button>}
-                        </Card>
-                    ))}
-                     <Button variant="outline" className="w-full mt-2">
-                        Manage Full Queue
-                    </Button>
-                </CardContent>
-            </Card>
-           </motion.div>
-        </div>
-      </div>
-)
+    )
+}
 
 const MyPatientsView = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -144,7 +169,7 @@ const MyPatientsView = () => {
                     </TableHeader>
                     <TableBody>
                         {filteredPatients.map(patient => (
-                            <TableRow key={patient.name}>
+                            <TableRow key={patient.id}>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar>
@@ -200,14 +225,16 @@ const ProfileView = () => (
      <Card className="mt-6">
         <CardHeader>
             <CardTitle>Doctor Profile</CardTitle>
-            <CardDescription>Manage your public profile information.</CardDescription>
+            <CardDescription>Manage your public profile information and settings.</CardDescription>
         </CardHeader>
         <CardContent>
             <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
                 <FileEdit className="mx-auto h-12 w-12" />
                 <h3 className="mt-4 text-lg font-semibold">Edit Your Profile</h3>
-                <p className="mt-1 text-sm max-w-xs mx-auto">This is where you'll update your specialty, consultation fees, and other details patients see.</p>
-                <Button variant="secondary" className="mt-4">Edit Profile Page (Coming Soon)</Button>
+                <p className="mt-1 text-sm max-w-xs mx-auto">Update your specialty, consultation fees, and other details patients see.</p>
+                <Button variant="default" className="mt-4" asChild>
+                  <Link href="/doctor/profile/edit">Edit Profile Page</Link>
+                </Button>
             </div>
         </CardContent>
     </Card>
