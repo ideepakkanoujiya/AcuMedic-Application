@@ -1,11 +1,23 @@
 'use client';
 
-import { useState, useEffect, useCallback, use } from 'react';
-import AgoraUIKit from 'agora-react-uikit';
+import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { VideoCallChat } from '@/components/video/chat';
+
+// Dynamically import AgoraUIKit with SSR turned off
+const AgoraUIKit = dynamic(() => import('agora-react-uikit'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full w-full flex-col items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="mt-4 text-muted-foreground">Loading Video Component...</p>
+    </div>
+  ),
+});
+
 
 interface VideoCallProps {
   params: {
