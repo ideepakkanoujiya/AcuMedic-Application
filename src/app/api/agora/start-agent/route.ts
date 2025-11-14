@@ -16,10 +16,9 @@ export async function POST(request: Request) {
   const customerId = process.env.AGORA_CUSTOMER_ID;
   const customerSecret = process.env.AGORA_CUSTOMER_SECRET;
   const openAiKey = process.env.OPENAI_API_KEY;
-  const ttsKey = process.env.MICROSOFT_TTS_API_KEY;
 
   // Check if all required environment variables are set
-  if (!appId || !appCertificate || !customerId || !customerSecret || !openAiKey || !ttsKey) {
+  if (!appId || !appCertificate || !customerId || !customerSecret || !openAiKey) {
     console.error('One or more required environment variables for Agora AI Agent are not set.');
     return NextResponse.json({ error: 'Server configuration error for AI agent.' }, { status: 500 });
   }
@@ -57,14 +56,6 @@ export async function POST(request: Request) {
             "failure_message": "I'm sorry, I'm having trouble connecting. Please hold on.",
             "params": {
                 "model": "gpt-4o-mini"
-            }
-        },
-        "tts": {
-            "vendor": "microsoft",
-            "params": {
-                "key": ttsKey,
-                "region": "eastus",
-                "voice_name": "en-US-AndrewMultilingualNeural"
             }
         },
         "asr": {
