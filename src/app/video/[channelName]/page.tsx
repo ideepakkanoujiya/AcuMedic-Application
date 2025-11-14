@@ -34,7 +34,7 @@ export default function VideoCall({ params }: VideoCallProps) {
   const { channelName } = use(params);
   
   // Using a static numeric UID for simplicity. In a real app, this would be dynamic and unique.
-  const userUid = 1002;
+  const userUid = Math.floor(Math.random() * 100000);
   
   const handleEndCall = useCallback(() => {
     setVideoCall(false);
@@ -75,7 +75,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     };
 
     fetchToken();
-  }, [channelName, user, isUserLoading, router]);
+  }, [channelName, user, isUserLoading, router, userUid]);
 
   if (isUserLoading || loading) {
     return (
@@ -123,11 +123,11 @@ export default function VideoCall({ params }: VideoCallProps) {
           channel: channelName,
           token: token,
           role: 'host',
-          uid: userUid,
+          uid: 0,
         }}
         rtmProps={{
           token: token,
-          uid: userUid.toString(),
+          uid: '',
         }}
         callbacks={callbacks}
       />
