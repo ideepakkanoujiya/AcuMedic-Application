@@ -40,7 +40,7 @@ export async function POST(request: Request) {
         "token": agentToken,
         "agent_rtc_uid": agentUid,
         "remote_rtc_uids": [userUid],
-        "idle_timeout": 120,
+        "idle_timeout": "120",
         "llm": {
             "vendor": "custom",
             "url": `${baseUrl}/api/agora/llm`,
