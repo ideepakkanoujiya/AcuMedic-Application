@@ -16,12 +16,14 @@ import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-writes';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const signupSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required' }),
   lastName: z.string().min(1, { message: 'Last name is required' }),
   email: z.string().email({ message: 'Invalid email address' }),
   password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+  role: z.enum(['patient', 'doctor']),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -30,7 +32,11 @@ export default function SignupPage() {
   const { toast } = useToast();
   const auth = useAuth();
   const firestore = useFirestore();
-  const isLoadingRedirect = useAuthRedirect({ redirectOn: 'auth', redirectTo: '/dashboard' });
+  const isLoadingRedirect = useAuthRedirect({ 
+    redirectOn: 'auth', 
+    patientRedirectTo: '/dashboard',
+    doctorRedirectTo: '/doctor/dashboard'
+  });
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -39,6 +45,7 @@ export default function SignupPage() {
       lastName: '',
       email: '',
       password: '',
+      role: 'patient',
     },
   });
 
@@ -57,7 +64,7 @@ export default function SignupPage() {
       const userDocRef = doc(firestore, 'users', user.uid);
       const userData = {
         id: user.uid,
-        role: 'patient',
+        role: data.role,
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -65,6 +72,19 @@ export default function SignupPage() {
       };
       
       setDocumentNonBlocking(userDocRef, userData, { merge: true });
+
+      // Step 4 (For Doctors): Create a doctor profile document
+      if (data.role === 'doctor') {
+        const doctorProfileRef = doc(firestore, 'doctor_profiles', user.uid);
+        const doctorProfileData = {
+            userId: user.uid,
+            specialty: "General Medicine", // Default specialty
+            teleconsultEnabled: true,
+            clinics: [],
+            ratings: 0,
+        };
+        setDocumentNonBlocking(doctorProfileRef, doctorProfileData, { merge: true });
+      }
 
       toast({
         title: 'Account Created',
@@ -105,6 +125,27 @@ export default function SignupPage() {
             <div className="space-y-4">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>I am a...</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select your role" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="patient">Patient</SelectItem>
+                            <SelectItem value="doctor">Doctor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}

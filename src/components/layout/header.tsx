@@ -29,7 +29,8 @@ import { motion } from 'framer-motion';
 
 const mainNavLinks = [
   { href: "/doctors", label: "Find a Doctor" },
-  { href: "/dashboard", label: "My Dashboard", auth: true },
+  { href: "/dashboard", label: "My Dashboard", auth: true, role: 'patient' },
+  { href: "/doctor/dashboard", label: "Doctor Portal", auth: true, role: 'doctor' },
 ];
 
 const aiToolsLinks = [
@@ -44,6 +45,8 @@ export default function Header({className}: {className?: string}) {
   const { language, setLanguage } = useContext(LanguageContext);
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  // This is a mock role. In a real app, this would come from the user's profile in the database.
+  const userRole = user ? (user.email?.includes('doctor') ? 'doctor' : 'patient') : null;
 
   const handleLogout = async () => {
     try {
@@ -58,8 +61,8 @@ export default function Header({className}: {className?: string}) {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
   
-  if (pathname === '/ai-assistant' || pathname.startsWith('/video/')) {
-    return null; // Don't render header on the chat page or video page for a more immersive experience
+  if (pathname.startsWith('/video/')) {
+    return null; // Don't render header on video page
   }
 
   return (
@@ -93,15 +96,28 @@ export default function Header({className}: {className?: string}) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {mainNavLinks.map(link => (
-              (!link.auth || user) &&
-              <Link key={link.href} href={link.href} className={cn(
-                "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
-                pathname === link.href && "text-primary"
-                )}>
-                {link.label}
-              </Link>
-            ))}
+            {mainNavLinks.map(link => {
+              if (link.auth) {
+                // Show link if user is logged in and role matches, or if no role is specified
+                return user && (!link.role || link.role === userRole) && (
+                   <Link key={link.href} href={link.href} className={cn(
+                    "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+                    pathname.startsWith(link.href) && "text-primary"
+                    )}>
+                    {link.label}
+                  </Link>
+                )
+              }
+              // Show public links
+              return (
+                 <Link key={link.href} href={link.href} className={cn(
+                    "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+                    pathname.startsWith(link.href) && "text-primary"
+                    )}>
+                    {link.label}
+                  </Link>
+              )
+            })}
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
@@ -146,7 +162,7 @@ export default function Header({className}: {className?: string}) {
                     </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href={userRole === 'doctor' ? "/doctor/dashboard" : "/dashboard"}>Dashboard</Link>
                   </DropdownMenuItem>
                    <DropdownMenuItem asChild>
                     <Link href="/dashboard?tab=profile">Profile Settings</Link>
@@ -159,9 +175,14 @@ export default function Header({className}: {className?: string}) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild className="transition-transform duration-300 hover:scale-105">
-                <Link href="/signup">Get Started</Link>
-              </Button>
+              <div className="hidden sm:flex items-center gap-2">
+                 <Button variant="ghost" asChild>
+                    <Link href="/login">Login</Link>
+                </Button>
+                <Button asChild className="transition-transform duration-300 hover:scale-105">
+                    <Link href="/signup">Get Started</Link>
+                </Button>
+              </div>
             )}
 
             <div className="md:hidden">
@@ -176,13 +197,31 @@ export default function Header({className}: {className?: string}) {
                   <div className="flex flex-col gap-6 pt-10">
                     <Logo />
                     <nav className="flex flex-col gap-4">
-                    {[...aiToolsLinks, ...mainNavLinks].map(link => (
-                      (!link.auth || user) &&
-                      <Link key={link.href} href={link.href} className="text-lg font-medium text-foreground transition-colors hover:text-primary">
-                        {link.label}
-                      </Link>
-                    ))}
+                    {[...aiToolsLinks, ...mainNavLinks].map(link => {
+                       if (link.auth) {
+                          return user && (!link.role || link.role === userRole) && (
+                            <Link key={link.href} href={link.href} className="text-lg font-medium text-foreground transition-colors hover:text-primary">
+                              {link.label}
+                            </Link>
+                          )
+                       }
+                       return (
+                          <Link key={link.href} href={link.href} className="text-lg font-medium text-foreground transition-colors hover:text-primary">
+                            {link.label}
+                          </Link>
+                       )
+                    })}
                     </nav>
+                     {!user && (
+                        <div className="flex flex-col gap-2 mt-4">
+                             <Button asChild className="w-full">
+                                <Link href="/login">Login</Link>
+                            </Button>
+                             <Button variant="outline" asChild className="w-full">
+                                <Link href="/signup">Sign Up</Link>
+                            </Button>
+                        </div>
+                    )}
                   </div>
                 </SheetContent>
               </Sheet>

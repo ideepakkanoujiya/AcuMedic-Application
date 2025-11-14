@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-writes';
 
 const loginSchema = z.object({
@@ -38,7 +38,11 @@ export default function LoginPage() {
   const { toast } = useToast();
   const auth = useAuth();
   const firestore = useFirestore();
-  const isLoadingRedirect = useAuthRedirect({ redirectOn: 'auth', redirectTo: '/dashboard' });
+  const isLoadingRedirect = useAuthRedirect({ 
+    redirectOn: 'auth', 
+    patientRedirectTo: '/dashboard',
+    doctorRedirectTo: '/doctor/dashboard'
+  });
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
