@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import AgoraUIKit from 'agora-react-uikit';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -8,9 +8,9 @@ import { useUser } from '@/firebase';
 import { VideoCallChat } from '@/components/video/chat';
 
 interface VideoCallProps {
-  params: {
+  params: Promise<{
     channelName: string;
-  };
+  }>;
 }
 
 export default function VideoCall({ params }: VideoCallProps) {
@@ -20,10 +20,10 @@ export default function VideoCall({ params }: VideoCallProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const channelName = params.channelName;
+  const { channelName } = use(params);
   
   // Define a stable UID for the user for the duration of the session
-  const userUid = 0; // Let Agora assign a random UID for the human user
+  const userUid = 1002; // Use a static non-zero UID for the human user
 
   // Function to start the AI agent
   const startAgent = useCallback(async () => {
