@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     "properties": {
         "channel": channelName,
         "token": agentToken,
-        "agent_rtc_uid": agentUid.toString(),
+        "agent_rtc_uid": agentUid,
         "remote_rtc_uids": [userUid.toString()],
         "idle_timeout": 120,
         "advanced_features": {
