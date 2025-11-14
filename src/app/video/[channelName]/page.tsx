@@ -24,11 +24,11 @@ export default function VideoCall({ params }: VideoCallProps) {
   
   // Define a stable UID for the user for the duration of the session
   const userUid = 1002; // Use a static non-zero UID for the human user
+  const agentUid = 1001; // Assign a unique static UID for the agent
 
   // Function to start the AI agent
   const startAgent = useCallback(async () => {
     try {
-      const agentUid = 1001; // Assign a unique static UID for the agent
       const res = await fetch('/api/agora/start-agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -48,7 +48,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     } catch (e) {
       console.error("Error calling start-agent API:", e);
     }
-  }, [channelName, userUid]);
+  }, [channelName, userUid, agentUid]);
 
 
   useEffect(() => {
@@ -88,9 +88,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     };
 
     fetchTokenAndStartAgent();
-  // The dependency array is intentionally kept minimal.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelName, user, isUserLoading, router, userUid]);
+  }, [channelName, user, isUserLoading, router, userUid, startAgent]);
 
   if (isUserLoading || loading) {
     return (
