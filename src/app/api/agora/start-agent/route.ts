@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import { RtcTokenBuilder, RtcRole } from 'agora-token';
 
@@ -42,8 +43,8 @@ export async function POST(request: Request) {
         "idle_timeout": 120,
         "llm": {
             "vendor": "custom",
-            "url": `${baseUrl}/api/genkit/flow/agoraLlmProxyFlow`,
-            "api_key": geminiApiKey, // Pass the key to our custom flow for auth
+            "url": `${baseUrl}/api/agora/llm`,
+            "api_key": geminiApiKey, 
             "system_messages": [
                 {
                     "role": "system",
@@ -56,8 +57,8 @@ export async function POST(request: Request) {
         },
         "tts": {
             "vendor": "custom",
-            "url": `${baseUrl}/api/genkit/flow/textToSpeechFlow`,
-            "api_key": process.env.GEMINI_API_KEY // Pass a key for consistency, even if unused by the flow itself
+            "url": `${baseUrl}/api/agora/tts`,
+            "api_key": geminiApiKey,
         },
         "asr": {
             "language": "en-US"
@@ -98,11 +99,19 @@ function generateRtcToken(appId: string, appCertificate: string, channelName: st
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
 
+    // The UID for token generation must be a number
+    const numericUid = typeof uid === 'string' ? parseInt(uid, 10) : uid;
+    
+    // Ensure the UID is a valid integer before building the token
+    if (isNaN(numericUid)) {
+        throw new Error("Invalid UID for token generation");
+    }
+
     return RtcTokenBuilder.buildTokenWithUid(
       appId,
       appCertificate,
       channelName,
-      typeof uid === 'string' ? parseInt(uid, 10) : uid,
+      numericUid,
       role,
       privilegeExpiredTs
     );
