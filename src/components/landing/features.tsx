@@ -27,7 +27,7 @@ const features = [
     icon: <Video className="h-8 w-8 text-primary" />,
     title: "Tele-Consultations",
     description: "Connect with top doctors from the comfort of your home via secure video.",
-    href: "/doctors",
+    href: "/dashboard",
   },
   {
     icon: <HeartPulse className="h-8 w-8 text-primary" />,
