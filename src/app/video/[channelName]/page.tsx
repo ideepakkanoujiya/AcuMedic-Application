@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AgoraUIKit from 'agora-react-uikit';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -21,6 +21,35 @@ export default function VideoCall({ params }: VideoCallProps) {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const { channelName } = params;
+  
+  // Define a stable UID for the user for the duration of the session
+  const userUid = 0; // Let Agora assign a random UID for the human user
+
+  // Function to start the AI agent
+  const startAgent = useCallback(async () => {
+    try {
+      const agentUid = 1001; // Assign a unique static UID for the agent
+      const res = await fetch('/api/agora/start-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channelName,
+          agentUid: agentUid,
+          userUid: userUid
+        }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Failed to start AI agent:", errorData.details || 'Unknown error');
+        // Non-blocking, so we don't show an error to the user if the agent fails
+      } else {
+        console.log("AI Agent started successfully.");
+      }
+    } catch (e) {
+      console.error("Error calling start-agent API:", e);
+    }
+  }, [channelName, userUid]);
+
 
   useEffect(() => {
     if (isUserLoading) return;
@@ -37,7 +66,7 @@ export default function VideoCall({ params }: VideoCallProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             channelName,
-            uid: 0, // Using 0 allows Agora to assign a random integer UID
+            uid: userUid, 
           }),
         });
 
@@ -46,6 +75,10 @@ export default function VideoCall({ params }: VideoCallProps) {
         }
         const data = await response.json();
         setToken(data.token);
+        
+        // After successfully getting a token, start the agent
+        await startAgent();
+
       } catch (err: any) {
         console.error('Token fetch error:', err);
         setError('Could not connect to the video service. Please try again later.');
@@ -55,7 +88,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     };
 
     fetchToken();
-  }, [channelName, user, isUserLoading, router]);
+  }, [channelName, user, isUserLoading, router, startAgent, userUid]);
 
   if (isUserLoading || loading) {
     return (
@@ -107,7 +140,7 @@ export default function VideoCall({ params }: VideoCallProps) {
             channel: channelName,
             token: token,
             role: 'publisher',
-            uid: 0,
+            uid: userUid,
           }}
           callbacks={callbacks}
           styleProps={{
