@@ -20,7 +20,7 @@ export default function VideoCall({ params }: VideoCallProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { channelName } = use(params);
+  const { channelName } = params;
   
   // Define a stable, non-zero UID for the user and agent
   const userUid = 1002;
@@ -47,7 +47,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     } catch (e) {
       console.error("Error calling start-agent API:", e);
     }
-  }, [channelName, userUid, agentUid]);
+  }, [channelName, agentUid]);
 
 
   useEffect(() => {
