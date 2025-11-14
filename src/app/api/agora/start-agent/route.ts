@@ -61,6 +61,7 @@ export async function POST(request: Request) {
             "api_key": geminiApiKey,
         },
         "asr": {
+            "vendor": "agora",
             "language": "en-US"
         }
     }
