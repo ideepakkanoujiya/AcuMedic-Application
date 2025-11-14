@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@/firebase';
-import { VideoCallChat } from '@/components/video/chat';
 
 // Dynamically import AgoraUIKit with SSR turned off
 const AgoraUIKit = dynamic(() => import('agora-react-uikit'), {
@@ -34,33 +33,12 @@ export default function VideoCall({ params }: VideoCallProps) {
   const { user, isUserLoading } = useUser();
   const { channelName } = use(params);
   
-  // Define a stable, non-zero UID for the user and agent
   const userUid = 1002;
-  const agentUid = 1001;
-
-  // Function to start the AI agent, memoized to prevent re-renders
-  const startAgent = useCallback(async () => {
-    try {
-      const res = await fetch('/api/agora/start-agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          channelName,
-          agentUid: agentUid,
-          userUid: userUid // Pass the correct, static user UID
-        }),
-      });
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.error("Failed to start AI agent:", errorData.details || 'Unknown error');
-      } else {
-        console.log("AI Agent started successfully.");
-      }
-    } catch (e) {
-      console.error("Error calling start-agent API:", e);
-    }
-  }, [channelName, agentUid]);
-
+  
+  const handleEndCall = useCallback(() => {
+    setVideoCall(false);
+    router.push('/dashboard');
+  }, [router]);
 
   useEffect(() => {
     if (isUserLoading) return;
@@ -69,7 +47,7 @@ export default function VideoCall({ params }: VideoCallProps) {
       return;
     }
 
-    const fetchTokenAndStartAgent = async () => {
+    const fetchToken = async () => {
       try {
         setLoading(true);
         const response = await fetch('/api/agora/token', {
@@ -77,7 +55,7 @@ export default function VideoCall({ params }: VideoCallProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             channelName,
-            uid: userUid, // Use the static UID to get the token
+            uid: userUid,
           }),
         });
 
@@ -87,9 +65,6 @@ export default function VideoCall({ params }: VideoCallProps) {
         const data = await response.json();
         setToken(data.token);
         
-        // After successfully getting a token, start the agent
-        await startAgent();
-
       } catch (err: any) {
         console.error('Token fetch error:', err);
         setError('Could not connect to the video service. Please try again later.');
@@ -98,8 +73,8 @@ export default function VideoCall({ params }: VideoCallProps) {
       }
     };
 
-    fetchTokenAndStartAgent();
-  }, [channelName, user, isUserLoading, router, userUid, startAgent]);
+    fetchToken();
+  }, [channelName, user, isUserLoading, router, userUid]);
 
   if (isUserLoading || loading) {
     return (
@@ -125,10 +100,7 @@ export default function VideoCall({ params }: VideoCallProps) {
   }
 
   const callbacks = {
-    EndCall: () => {
-      setVideoCall(false);
-      router.push('/dashboard');
-    },
+    EndCall: handleEndCall,
   };
 
   const appId = process.env.NEXT_PUBLIC_AGORA_APP_ID;
@@ -143,25 +115,17 @@ export default function VideoCall({ params }: VideoCallProps) {
   }
 
   return videoCall ? (
-    <div className="flex h-screen w-screen bg-black">
-      <div className="flex-1 relative">
-        <AgoraUIKit
-          rtcProps={{
-            appId: appId,
-            channel: channelName,
-            token: token,
-            role: 'host',
-            uid: userUid, // Ensure the UI kit joins with the correct static UID
-          }}
-          callbacks={callbacks}
-          styleProps={{
-            container: { height: '100%', width: '100%', borderRadius: 0, position: 'absolute' },
-          }}
-        />
-      </div>
-      <div className="w-[380px] h-full bg-background border-l border-border">
-          <VideoCallChat />
-      </div>
+    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
+      <AgoraUIKit
+        rtcProps={{
+          appId: appId,
+          channel: channelName,
+          token: token,
+          role: 'host',
+          uid: userUid,
+        }}
+        callbacks={callbacks}
+      />
     </div>
   ) : (
      <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
