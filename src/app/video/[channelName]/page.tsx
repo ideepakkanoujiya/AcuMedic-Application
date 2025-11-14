@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import dynamic from 'next/dynamic';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -19,9 +19,9 @@ const AgoraUIKit = dynamic(() => import('agora-react-uikit'), {
 
 
 interface VideoCallProps {
-  params: {
+  params: Promise<{
     channelName: string;
-  };
+  }>;
 }
 
 export default function VideoCall({ params }: VideoCallProps) {
@@ -31,7 +31,7 @@ export default function VideoCall({ params }: VideoCallProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { channelName } = params;
+  const { channelName } = use(params);
   
   // Using a static numeric UID for simplicity. In a real app, this would be dynamic and unique.
   const userUid = 1002;
@@ -48,7 +48,7 @@ export default function VideoCall({ params }: VideoCallProps) {
       return;
     }
 
-    const fetchTokenAndStartAgent = async () => {
+    const fetchToken = async () => {
       try {
         setLoading(true);
         const tokenResponse = await fetch('/api/agora/token', {
@@ -74,7 +74,7 @@ export default function VideoCall({ params }: VideoCallProps) {
       }
     };
 
-    fetchTokenAndStartAgent();
+    fetchToken();
   }, [channelName, user, isUserLoading, router]);
 
   if (isUserLoading || loading) {
