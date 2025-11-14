@@ -33,9 +33,6 @@ export default function VideoCall({ params }: VideoCallProps) {
   const { user, isUserLoading } = useUser();
   const { channelName } = use(params);
   
-  // Using a static numeric UID for simplicity. In a real app, this would be dynamic and unique.
-  const userUid = Math.floor(Math.random() * 100000);
-  
   const handleEndCall = useCallback(() => {
     setVideoCall(false);
     router.push('/dashboard');
@@ -51,6 +48,9 @@ export default function VideoCall({ params }: VideoCallProps) {
     const fetchToken = async () => {
       try {
         setLoading(true);
+        // Using a random, non-zero numeric UID for the token request.
+        const userUid = Math.floor(Math.random() * 100000) + 1;
+
         const tokenResponse = await fetch('/api/agora/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -75,7 +75,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     };
 
     fetchToken();
-  }, [channelName, user, isUserLoading, router, userUid]);
+  }, [channelName, user, isUserLoading, router]);
 
   if (isUserLoading || loading) {
     return (
@@ -123,11 +123,11 @@ export default function VideoCall({ params }: VideoCallProps) {
           channel: channelName,
           token: token,
           role: 'host',
-          uid: 0,
+          uid: 0, // Agora recommends 0 for RTC to auto-assign UID from token
         }}
         rtmProps={{
           token: token,
-          uid: '',
+          uid: '', // Agora recommends an empty string for RTM to auto-assign UID from token
         }}
         callbacks={callbacks}
       />
