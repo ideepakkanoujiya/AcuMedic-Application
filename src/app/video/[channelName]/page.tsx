@@ -8,9 +8,9 @@ import { useUser } from '@/firebase';
 import { VideoCallChat } from '@/components/video/chat';
 
 interface VideoCallProps {
-  params: Promise<{
+  params: {
     channelName: string;
-  }>;
+  };
 }
 
 export default function VideoCall({ params }: VideoCallProps) {
@@ -22,11 +22,11 @@ export default function VideoCall({ params }: VideoCallProps) {
   const { user, isUserLoading } = useUser();
   const { channelName } = use(params);
   
-  // Define a stable UID for the user for the duration of the session
-  const userUid = 1002; // Use a static non-zero UID for the human user
-  const agentUid = 1001; // Assign a unique static UID for the agent
+  // Define a stable, non-zero UID for the user and agent
+  const userUid = 1002;
+  const agentUid = 1001;
 
-  // Function to start the AI agent
+  // Function to start the AI agent, memoized to prevent re-renders
   const startAgent = useCallback(async () => {
     try {
       const res = await fetch('/api/agora/start-agent', {
@@ -35,13 +35,12 @@ export default function VideoCall({ params }: VideoCallProps) {
         body: JSON.stringify({
           channelName,
           agentUid: agentUid,
-          userUid: userUid
+          userUid: userUid // Pass the correct, static user UID
         }),
       });
       if (!res.ok) {
         const errorData = await res.json();
         console.error("Failed to start AI agent:", errorData.details || 'Unknown error');
-        // Non-blocking, so we don't show an error to the user if the agent fails
       } else {
         console.log("AI Agent started successfully.");
       }
@@ -66,7 +65,7 @@ export default function VideoCall({ params }: VideoCallProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             channelName,
-            uid: userUid, 
+            uid: userUid, // Use the static UID to get the token
           }),
         });
 
@@ -140,7 +139,7 @@ export default function VideoCall({ params }: VideoCallProps) {
             channel: channelName,
             token: token,
             role: 'publisher',
-            uid: userUid,
+            uid: userUid, // Ensure the UI kit joins with the correct static UID
           }}
           callbacks={callbacks}
           styleProps={{
