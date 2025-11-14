@@ -129,7 +129,7 @@ export default function Header({className}: {className?: string}) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {languages.map(lang => (
-                  <DropdownMenuItem key={lang.code} onSelect={() => setLanguage(lang.code)}>
+                  <DropdownMenuItem key={lang.code} onClick={() => setLanguage(lang.code)}>
                     <div className="flex items-center justify-between w-full">
                       <span>{lang.flag} {lang.name}</span>
                       {language === lang.code && <Check className="h-4 w-4" />}
