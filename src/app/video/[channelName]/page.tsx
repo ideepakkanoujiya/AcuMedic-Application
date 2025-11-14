@@ -48,33 +48,33 @@ export default function VideoCall({ params }: VideoCallProps) {
       return;
     }
 
-    const fetchToken = async () => {
+    const fetchTokenAndStartAgent = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/agora/token', {
+        const tokenResponse = await fetch('/api/agora/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             channelName,
-            uid: userUid, // The UID to associate with the token
+            uid: userUid,
           }),
         });
 
-        if (!response.ok) {
+        if (!tokenResponse.ok) {
           throw new Error('Failed to fetch Agora token');
         }
-        const data = await response.json();
-        setToken(data.token);
+        const tokenData = await tokenResponse.json();
+        setToken(tokenData.token);
         
       } catch (err: any) {
-        console.error('Token fetch error:', err);
+        console.error('Initialization error:', err);
         setError('Could not connect to the video service. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchToken();
+    fetchTokenAndStartAgent();
   }, [channelName, user, isUserLoading, router]);
 
   if (isUserLoading || loading) {
@@ -127,7 +127,7 @@ export default function VideoCall({ params }: VideoCallProps) {
         }}
         rtmProps={{
           token: token,
-          uid: userUid.toString(), // RTM requires a string UID
+          uid: userUid.toString(),
         }}
         callbacks={callbacks}
       />
