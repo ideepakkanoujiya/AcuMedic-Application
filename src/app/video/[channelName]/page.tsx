@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import dynamic from 'next/dynamic';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function VideoCall({ params }: VideoCallProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { channelName } = params;
+  const { channelName } = use(params);
   
   // Define a stable, non-zero UID for the user and agent
   const userUid = 1002;
