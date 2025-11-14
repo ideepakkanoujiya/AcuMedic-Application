@@ -15,11 +15,11 @@ export async function POST(request: Request) {
   const appCertificate = process.env.AGORA_APP_CERTIFICATE;
   const customerId = process.env.AGORA_CUSTOMER_ID;
   const customerSecret = process.env.AGORA_CUSTOMER_SECRET;
-  const openAiKey = process.env.OPENAI_API_KEY;
+  const geminiApiKey = process.env.GEMINI_API_KEY;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   // Check if all required environment variables are set
-  if (!appId || !appCertificate || !customerId || !customerSecret || !openAiKey || !baseUrl) {
+  if (!appId || !appCertificate || !customerId || !customerSecret || !geminiApiKey || !baseUrl) {
     console.error('One or more required environment variables for Agora AI Agent are not set.');
     return NextResponse.json({ error: 'Server configuration error for AI agent.' }, { status: 500 });
   }
@@ -44,8 +44,11 @@ export async function POST(request: Request) {
             "enable_aivad": true
         },
         "llm": {
-            "url": "https://api.openai.com/v1/chat/completions",
-            "api_key": openAiKey,
+            "vendor": "custom",
+            "params": {
+                "url": `${baseUrl}/api/genkit/flow/agoraLlmProxyFlow`,
+                "api_key": geminiApiKey, // Pass the key to our custom flow for auth
+            },
             "system_messages": [
                 {
                     "role": "system",
@@ -55,15 +58,12 @@ export async function POST(request: Request) {
             "max_history": 32,
             "greeting_message": "Hello, I am the AcuMedic AI assistant. I will be monitoring this call to provide help if needed.",
             "failure_message": "I'm sorry, I'm having trouble connecting. Please hold on.",
-            "params": {
-                "model": "gpt-4o-mini"
-            }
         },
         "tts": {
             "vendor": "custom",
             "params": {
                 "url": `${baseUrl}/api/genkit/flow/textToSpeechFlow`,
-                 "api_key": process.env.GEMINI_API_KEY
+                 "api_key": process.env.MURFAI_API_KEY
             }
         },
         "asr": {
