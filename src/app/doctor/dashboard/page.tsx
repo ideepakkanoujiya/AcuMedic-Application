@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, Users, Clock, Video, User, Search, FileEdit, Eye, Bot, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Users, Clock, Video, User, Search, FileEdit, Bot, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthRedirect } from '@/hooks/use-auth-redirect';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -47,9 +47,9 @@ const AIBriefingDialog = ({ patientId }: { patientId: string }) => {
     const handleFetchBriefing = async () => {
         setIsLoading(true);
         setError(null);
+        setBriefing(null);
         try {
-            // In a real app, you'd pass a real patient ID
-            const result = await generateDoctorBriefing({ patientId: 'mockPatient123' });
+            const result = await generateDoctorBriefing({ patientId: patientId });
             setBriefing(result);
         } catch (err) {
             setError("Could not generate AI briefing. Please try again.");
@@ -63,7 +63,7 @@ const AIBriefingDialog = ({ patientId }: { patientId: string }) => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm" onClick={handleFetchBriefing}>
-                    <Eye className="mr-2 h-4 w-4" /> View AI Briefing
+                    <Bot className="mr-2 h-4 w-4" /> Intelligent Briefing
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -134,7 +134,7 @@ const TodaysView = () => {
                                 <div className="flex gap-2 w-full md:w-auto flex-wrap">
                                     <AIBriefingDialog patientId="pat1" />
                                     <Button asChild className="flex-1">
-                                        <Link href={`/video/session-aarav-sen`}><Video className="mr-2 h-4 w-4"/>Start Call</Link>
+                                        <Link href={`/video/appointment-123-aarav`}><Video className="mr-2 h-4 w-4"/>Start Call</Link>
                                     </Button>
                                 </div>
                             </Card>
@@ -250,7 +250,7 @@ const MyPatientsView = () => {
                                 </TableCell>
                                 <TableCell>{patient.lastVisit}</TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm">View Records</Button>
+                                    <AIBriefingDialog patientId={patient.id} />
                                 </TableCell>
                             </TableRow>
                         ))}
