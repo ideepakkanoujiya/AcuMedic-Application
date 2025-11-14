@@ -38,14 +38,12 @@ export async function POST(request: Request) {
         "channel": channelName,
         "token": agentToken,
         "agent_rtc_uid": agentUid,
-        "remote_rtc_uids": [userUid], // Ensure userUid is a number
+        "remote_rtc_uids": [userUid],
         "idle_timeout": 120,
         "llm": {
             "vendor": "custom",
-            "params": {
-                "url": `${baseUrl}/api/genkit/flow/agoraLlmProxyFlow`,
-                "api_key": geminiApiKey, // Pass the key to our custom flow for auth
-            },
+            "url": `${baseUrl}/api/genkit/flow/agoraLlmProxyFlow`,
+            "api_key": geminiApiKey, // Pass the key to our custom flow for auth
             "system_messages": [
                 {
                     "role": "system",
@@ -58,10 +56,8 @@ export async function POST(request: Request) {
         },
         "tts": {
             "vendor": "custom",
-            "params": {
-                "url": `${baseUrl}/api/genkit/flow/textToSpeechFlow`,
-                 "api_key": process.env.GEMINI_API_KEY // Pass a key for consistency, even if unused by the flow itself
-            }
+            "url": `${baseUrl}/api/genkit/flow/textToSpeechFlow`,
+            "api_key": process.env.GEMINI_API_KEY // Pass a key for consistency, even if unused by the flow itself
         },
         "asr": {
             "language": "en-US"
