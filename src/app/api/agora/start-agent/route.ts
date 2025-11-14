@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const { channelName, agentUid, userUid } = await request.json();
 
   // Validate input
-  if (!channelName || !agentUid || !userUid) {
+  if (!channelName || !agentUid || userUid === undefined || userUid === null) {
     return NextResponse.json({ error: 'channelName, agentUid, and userUid are required' }, { status: 400 });
   }
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         "channel": channelName,
         "token": agentToken,
         "agent_rtc_uid": agentUid,
-        "remote_rtc_uids": [userUid.toString()],
+        "remote_rtc_uids": [userUid], // Ensure userUid is a number
         "idle_timeout": 120,
         "llm": {
             "vendor": "custom",
