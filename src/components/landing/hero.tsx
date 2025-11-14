@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/use-translation';
 
 
 const IconHeart = (props: React.SVGProps<SVGSVGElement>) => (
@@ -54,16 +55,6 @@ const IconRisk = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-
-const baseSuggestions = [
-    { name: 'Check Symptoms', href: '/symptom-checker', icon: <Bot className="h-5 w-5 text-primary" />, external: false },
-    { name: 'Hospitals Nearby', href: 'https://www.google.com/maps/search/hospitals+near+me', icon: <MapPin className="h-5 w-5 text-primary" />, external: true },
-    { name: 'Call an Ambulance', href: 'tel:112', icon: <Siren className="h-5 w-5 text-primary" />, external: true },
-    { name: 'Find a Specialist', href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" />, external: false },
-    { name: 'Book an Appointment', href: '/book', icon: <BookMarked className="h-5 w-5 text-primary" />, external: false },
-    { name: 'Live Queue Status', href: '/queue', icon: <BarChart className="h-5 w-5 text-primary" />, external: false },
-];
-
 const floatingIcons = [
   { icon: IconHeart, className: 'top-[15%] left-[5%] w-16 h-16', duration: 12 },
   { icon: IconMind, className: 'top-[20%] right-[8%] w-14 h-14 stroke-current', duration: 10 },
@@ -76,7 +67,17 @@ const floatingIcons = [
 export default function Hero() {
   const [searchTerm, setSearchTerm] = useState('');
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const { t } = useTranslation();
   
+  const baseSuggestions = [
+    { name: t('hero.suggestions.checkSymptoms'), href: '/symptom-checker', icon: <Bot className="h-5 w-5 text-primary" />, external: false },
+    { name: t('hero.suggestions.hospitalsNearby'), href: 'https://www.google.com/maps/search/hospitals+near+me', icon: <MapPin className="h-5 w-5 text-primary" />, external: true },
+    { name: t('hero.suggestions.callAmbulance'), href: 'tel:112', icon: <Siren className="h-5 w-5 text-primary" />, external: true },
+    { name: t('hero.suggestions.findSpecialist'), href: '/doctors', icon: <Stethoscope className="h-5 w-5 text-primary" />, external: false },
+    { name: t('hero.suggestions.bookAppointment'), href: '/book', icon: <BookMarked className="h-5 w-5 text-primary" />, external: false },
+    { name: t('hero.suggestions.liveQueue'), href: '/queue', icon: <BarChart className="h-5 w-5 text-primary" />, external: false },
+  ];
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -87,7 +88,7 @@ export default function Hero() {
 
   const dynamicSuggestions = searchTerm.trim()
     ? [
-        { name: `Web Search for "${searchTerm}"`, href: `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, icon: <Globe className="h-5 w-5 text-primary" />, external: true },
+        { name: `${t('hero.suggestions.webSearch')} "${searchTerm}"`, href: `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, icon: <Globe className="h-5 w-5 text-primary" />, external: true },
         ...baseSuggestions,
       ]
     : baseSuggestions;
@@ -132,12 +133,11 @@ export default function Hero() {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="space-y-8"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter font-headline">
-              Instant care. Intelligent support
-              <br />— <span className="text-primary">anytime, anywhere</span>
-            </h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter font-headline"
+              dangerouslySetInnerHTML={{ __html: t('hero.title') }}
+            />
             <p className="max-w-[600px] mx-auto text-lg text-muted-foreground">
-              From instant AI-driven symptom analysis to seamless appointment booking, take control of your health journey with confidence.
+              {t('hero.subtitle')}
             </p>
             <motion.div 
               className="w-full max-w-2xl mx-auto"
@@ -151,7 +151,7 @@ export default function Hero() {
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                       <Input
                         type="text"
-                        placeholder="Search symptoms, doctors or specialties..."
+                        placeholder={t('hero.searchPlaceholder')}
                         className="pl-12 pr-4 py-3 h-14 text-base w-full rounded-full shadow-lg transition-all duration-300 focus-visible:shadow-2xl focus-visible:ring-primary/50 focus-visible:ring-2 bg-background/80 backdrop-blur-sm"
                         value={searchTerm}
                         onChange={(e) => {
@@ -165,12 +165,12 @@ export default function Hero() {
                         aria-label="Search symptoms, doctors or specialties"
                       />
                        <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 transform transition-transform duration-300 hover:scale-105">
-                        Search
+                        {t('hero.searchButton')}
                       </Button>
                     </form>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" className="w-[calc(100vw-2rem)] sm:w-[500px] md:w-[640px] p-4" align="center">
-                    <p className="text-sm font-medium text-muted-foreground mb-3 px-2">Suggestions</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-3 px-2">{t('hero.suggestions.title')}</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {dynamicSuggestions.map((item) => (
                            <Link key={item.name} href={item.href} target={item.external ? '_blank' : '_self'} rel={item.external ? 'noopener noreferrer' : ''} className="block" onClick={() => setPopoverOpen(false)}>
@@ -190,7 +190,7 @@ export default function Hero() {
                       className="w-full sm:w-auto bg-gradient-to-r from-primary to-blue-400 text-white shadow-lg hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105" 
                       asChild
                     >
-                       <Link href="/symptom-checker">Start AI Symptom Check</Link>
+                       <Link href="/symptom-checker">{t('hero.ctaButton')}</Link>
                     </Button>
                 </div>
             </motion.div>

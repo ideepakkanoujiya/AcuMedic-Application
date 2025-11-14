@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "title": "Instant care. Intelligent support<br />— <span class='text-primary'>anytime, anywhere</span>",
+    "subtitle": "From instant AI-driven symptom analysis to seamless appointment booking, take control of your health journey with confidence.",
+    "searchPlaceholder": "Search symptoms, doctors or specialties...",
+    "searchButton": "Search",
+    "ctaButton": "Start AI Symptom Check",
+    "suggestions": {
+        "title": "Suggestions",
+        "checkSymptoms": "Check Symptoms",
+        "hospitalsNearby": "Hospitals Nearby",
+        "callAmbulance": "Call an Ambulance",
+        "findSpecialist": "Find a Specialist",
+        "bookAppointment": "Book an Appointment",
+        "liveQueue": "Live Queue Status",
+        "webSearch": "Web Search for"
+    }
+  }
+}
