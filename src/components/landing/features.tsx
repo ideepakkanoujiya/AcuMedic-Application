@@ -1,5 +1,5 @@
 "use client";
-import { Bot, Users, Video, FileText, HeartPulse } from 'lucide-react';
+import { Bot, Users, Video, FileText, HeartPulse, MessageSquareQuote } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -27,6 +27,12 @@ const features = [
     icon: <Video className="h-8 w-8 text-primary" />,
     title: "Tele-Consultations",
     description: "Connect with top doctors from the comfort of your home via secure video.",
+    href: "/dashboard",
+  },
+  {
+    icon: <MessageSquareQuote className="h-8 w-8 text-primary" />,
+    title: "In-Call AI Assistant",
+    description: "Have a voice-enabled AI assistant join your video calls to provide real-time support.",
     href: "/dashboard",
   },
   {
