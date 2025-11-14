@@ -4,15 +4,17 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, Users, Clock, Video, User, Search, FileEdit } from 'lucide-react';
+import { Calendar as CalendarIcon, Users, Clock, Video, User, Search, FileEdit, Eye, Bot, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthRedirect } from '@/hooks/use-auth-redirect';
-import { Loader2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Calendar } from '@/components/ui/calendar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { generateDoctorBriefing, DoctorBriefingOutput } from '@/ai/flows/generate-doctor-briefing-flow';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -36,6 +38,70 @@ const allPatients = [
     { id: 'pat5', name: "Priya Patel", lastVisit: "2024-06-25", avatar: "https://i.pravatar.cc/150?img=3" },
     { id: 'pat6', name: "Rohan Joshi", lastVisit: "2024-06-22", avatar: "https://i.pravatar.cc/150?img=6" },
 ];
+
+const AIBriefingDialog = ({ patientId }: { patientId: string }) => {
+    const [briefing, setBriefing] = useState<DoctorBriefingOutput | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleFetchBriefing = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // In a real app, you'd pass a real patient ID
+            const result = await generateDoctorBriefing({ patientId: 'mockPatient123' });
+            setBriefing(result);
+        } catch (err) {
+            setError("Could not generate AI briefing. Please try again.");
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="sm" onClick={handleFetchBriefing}>
+                    <Eye className="mr-2 h-4 w-4" /> View AI Briefing
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2"><Bot /> AI Pre-Consultation Briefing</DialogTitle>
+                </DialogHeader>
+                {isLoading && (
+                    <div className="flex flex-col items-center justify-center py-8">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="mt-2 text-muted-foreground">Generating patient summary...</p>
+                    </div>
+                )}
+                {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+                {briefing && (
+                    <div className="space-y-4 text-sm max-h-[60vh] overflow-y-auto pr-2">
+                        <div>
+                            <h4 className="font-semibold">Patient Primary Concern</h4>
+                            <p className="text-muted-foreground">{briefing.primaryConcernSummary}</p>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold">Key Areas for Investigation</h4>
+                            <ul className="list-disc list-inside text-muted-foreground">
+                                {briefing.keyInvestigationAreas.map((area, i) => <li key={i}>{area}</li>)}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold">Relevant History & Alerts</h4>
+                            <ul className="list-disc list-inside text-muted-foreground">
+                                {briefing.relevantHistory.map((item, i) => <li key={i}>{item}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
+};
+
 
 const TodaysView = () => {
     const [queue, setQueue] = useState(initialQueuePatients);
@@ -65,11 +131,11 @@ const TodaysView = () => {
                                         <p className="text-sm text-primary">11:00 AM - Video Consultation</p>
                                     </div>
                                 </div>
-                                <div className="flex gap-2 w-full md:w-auto">
+                                <div className="flex gap-2 w-full md:w-auto flex-wrap">
+                                    <AIBriefingDialog patientId="pat1" />
                                     <Button asChild className="flex-1">
                                         <Link href={`/video/session-aarav-sen`}><Video className="mr-2 h-4 w-4"/>Start Call</Link>
                                     </Button>
-                                    <Button variant="outline" className="flex-1">View Details</Button>
                                 </div>
                             </Card>
                             <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -83,7 +149,10 @@ const TodaysView = () => {
                                         <p className="text-sm text-muted-foreground">11:30 AM - In-Clinic Visit</p>
                                     </div>
                                 </div>
-                                <Button variant="secondary">View Details</Button>
+                                <div className="flex gap-2 w-full md:w-auto flex-wrap">
+                                    <AIBriefingDialog patientId="pat3" />
+                                    <Button variant="secondary" className="flex-1">View Details</Button>
+                                </div>
                             </Card>
                             <Card className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 opacity-60">
                                 <div className="flex items-center gap-3">
