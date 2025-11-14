@@ -1,4 +1,3 @@
-'use client';
 import { NextResponse } from 'next/server';
 import { RtcTokenBuilder, RtcRole } from 'agora-token';
 
