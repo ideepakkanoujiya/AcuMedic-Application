@@ -40,9 +40,6 @@ export async function POST(request: Request) {
         "agent_rtc_uid": agentUid,
         "remote_rtc_uids": [userUid.toString()],
         "idle_timeout": 120,
-        "advanced_features": {
-            "enable_aivad": true
-        },
         "llm": {
             "vendor": "custom",
             "params": {
