@@ -4,7 +4,7 @@ import { RtcTokenBuilder, RtcRole } from 'agora-token';
 export async function POST(request: Request) {
   const { channelName, uid } = await request.json();
 
-  if (!channelName || !uid) {
+  if (!channelName || uid === undefined || uid === null) {
     return NextResponse.json({ error: 'channelName and uid are required' }, { status: 400 });
   }
 
