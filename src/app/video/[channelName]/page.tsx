@@ -5,6 +5,7 @@ import AgoraUIKit from 'agora-react-uikit';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@/firebase';
+import { VideoCallChat } from '@/components/video/chat';
 
 interface VideoCallProps {
   params: {
@@ -98,20 +99,25 @@ export default function VideoCall({ params }: VideoCallProps) {
   }
 
   return videoCall ? (
-    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
-      <AgoraUIKit
-        rtcProps={{
-          appId: appId,
-          channel: channelName,
-          token: token,
-          role: 'publisher',
-          uid: 0,
-        }}
-        callbacks={callbacks}
-        styleProps={{
-          container: { height: '100%', width: '100%', borderRadius: 0 },
-        }}
-      />
+    <div className="flex h-screen w-screen bg-black">
+      <div className="flex-1 relative">
+        <AgoraUIKit
+          rtcProps={{
+            appId: appId,
+            channel: channelName,
+            token: token,
+            role: 'publisher',
+            uid: 0,
+          }}
+          callbacks={callbacks}
+          styleProps={{
+            container: { height: '100%', width: '100%', borderRadius: 0, position: 'absolute' },
+          }}
+        />
+      </div>
+      <div className="w-[380px] h-full bg-background border-l border-border">
+          <VideoCallChat />
+      </div>
     </div>
   ) : (
      <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
