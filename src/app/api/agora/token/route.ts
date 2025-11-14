@@ -23,11 +23,12 @@ export async function POST(request: Request) {
   const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
 
   try {
+    // UID can be a string or a number for RTC token builder
     const token = RtcTokenBuilder.buildTokenWithUid(
       appId,
       appCertificate,
       channelName,
-      uid,
+      uid, // UID is now a string from the client
       role,
       privilegeExpiredTs
     );

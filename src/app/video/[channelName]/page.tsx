@@ -26,7 +26,8 @@ interface VideoCallProps {
 
 export default function VideoCall({ params }: VideoCallProps) {
   const [videoCall, setVideoCall] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
+  const [rtcToken, setRtcToken] = useState<string | null>(null);
+  const [rtmToken, setRtmToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -45,26 +46,37 @@ export default function VideoCall({ params }: VideoCallProps) {
       return;
     }
 
-    const fetchToken = async () => {
+    const fetchTokens = async () => {
       try {
         setLoading(true);
-        // Using a random, non-zero numeric UID for the token request.
-        const userUid = Math.floor(Math.random() * 100000) + 1;
+        // A unique string UID is required for RTM, and can be used for RTC as well.
+        const userUid = user.uid;
 
-        const tokenResponse = await fetch('/api/agora/token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            channelName,
-            uid: userUid,
+        const [rtcTokenResponse, rtmTokenResponse] = await Promise.all([
+          fetch('/api/agora/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              channelName,
+              uid: userUid, // Pass string UID to RTC token endpoint
+            }),
           }),
-        });
+          fetch('/api/agora/rtm-token', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ uid: userUid }),
+          })
+        ]);
 
-        if (!tokenResponse.ok) {
-          throw new Error('Failed to fetch Agora token');
+        if (!rtcTokenResponse.ok || !rtmTokenResponse.ok) {
+          throw new Error('Failed to fetch Agora tokens');
         }
-        const tokenData = await tokenResponse.json();
-        setToken(tokenData.token);
+
+        const rtcTokenData = await rtcTokenResponse.json();
+        const rtmTokenData = await rtmTokenResponse.json();
+
+        setRtcToken(rtcTokenData.token);
+        setRtmToken(rtmTokenData.token);
         
       } catch (err: any) {
         console.error('Initialization error:', err);
@@ -74,7 +86,7 @@ export default function VideoCall({ params }: VideoCallProps) {
       }
     };
 
-    fetchToken();
+    fetchTokens();
   }, [channelName, user, isUserLoading, router]);
 
   if (isUserLoading || loading) {
@@ -106,7 +118,7 @@ export default function VideoCall({ params }: VideoCallProps) {
 
   const appId = process.env.NEXT_PUBLIC_AGORA_APP_ID;
 
-  if (!appId || !token) {
+  if (!appId || !rtcToken || !rtmToken) {
     return (
        <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center">
         <h2 className="text-2xl font-bold text-destructive">Configuration Error</h2>
@@ -121,13 +133,13 @@ export default function VideoCall({ params }: VideoCallProps) {
         rtcProps={{
           appId: appId,
           channel: channelName,
-          token: token,
-          role: 'host',
-          uid: 0, // Agora recommends 0 for RTC to auto-assign UID from token
+          token: rtcToken,
+          role: 'publisher',
+          uid: user?.uid,
         }}
         rtmProps={{
-          token: token,
-          uid: '', // Agora recommends an empty string for RTM to auto-assign UID from token
+          token: rtmToken,
+          uid: user?.uid,
         }}
         callbacks={callbacks}
       />
