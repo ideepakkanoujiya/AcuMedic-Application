@@ -63,7 +63,7 @@ export async function POST(request: Request) {
             "vendor": "custom",
             "params": {
                 "url": `${baseUrl}/api/genkit/flow/textToSpeechFlow`,
-                 "api_key": process.env.MURFAI_API_KEY
+                 "api_key": process.env.GEMINI_API_KEY // Pass a key for consistency, even if unused by the flow itself
             }
         },
         "asr": {
