@@ -20,7 +20,7 @@ export default function VideoCall({ params }: VideoCallProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { channelName } = params;
+  const channelName = params.channelName;
   
   // Define a stable UID for the user for the duration of the session
   const userUid = 0; // Let Agora assign a random UID for the human user
