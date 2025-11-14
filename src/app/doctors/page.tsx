@@ -17,6 +17,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { useTranslation } from '@/hooks/use-translation';
 
 const allDoctors = [
   {
@@ -86,6 +87,7 @@ const itemVariants = {
 
 export default function DoctorsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const { t } = useTranslation();
 
   const filteredDoctors = useMemo(() => {
     return allDoctors.filter(doctor => 
@@ -101,30 +103,30 @@ export default function DoctorsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center font-headline">Find Your Doctor</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center font-headline">{t('doctors.title')}</h1>
         <p className="text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
-          Search our network of top specialists and book your appointment today.
+          {t('doctors.subtitle')}
         </p>
 
         <Card className="mb-8 p-4 shadow-sm bg-card/80 backdrop-blur-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div className="relative lg:col-span-2">
-               <label htmlFor="search-doctor" className="text-sm font-medium text-muted-foreground">Doctor Name or Specialty</label>
+               <label htmlFor="search-doctor" className="text-sm font-medium text-muted-foreground">{t('doctors.searchLabel')}</label>
                <Search className="absolute left-3 bottom-3 h-5 w-5 text-muted-foreground" />
                <Input 
                   id="search-doctor" 
                   type="text" 
-                  placeholder="e.g., Dr. Carter or Cardiologist" 
+                  placeholder={t('doctors.searchPlaceholder')}
                   className="pl-10 h-11"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
             <div>
-               <label htmlFor="location" className="text-sm font-medium text-muted-foreground">Location</label>
+               <label htmlFor="location" className="text-sm font-medium text-muted-foreground">{t('doctors.locationLabel')}</label>
                <Select>
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="All Locations" />
+                    <SelectValue placeholder={t('doctors.allLocations')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="mumbai">Mumbai</SelectItem>
@@ -134,15 +136,15 @@ export default function DoctorsPage() {
                 </Select>
             </div>
              <div>
-               <label htmlFor="availability" className="text-sm font-medium text-muted-foreground">Availability</label>
+               <label htmlFor="availability" className="text-sm font-medium text-muted-foreground">{t('doctors.availabilityLabel')}</label>
                <Select>
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Any Time" />
+                    <SelectValue placeholder={t('doctors.anyTime')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="today">Today</SelectItem>
-                    <SelectItem value="tomorrow">Tomorrow</SelectItem>
-                    <SelectItem value="weekend">This Weekend</SelectItem>
+                    <SelectItem value="today">{t('doctors.today')}</SelectItem>
+                    <SelectItem value="tomorrow">{t('doctors.tomorrow')}</SelectItem>
+                    <SelectItem value="weekend">{t('doctors.thisWeekend')}</SelectItem>
                   </SelectContent>
                 </Select>
             </div>
@@ -170,7 +172,7 @@ export default function DoctorsPage() {
                  />
                 <h3 className="text-xl font-bold font-headline">{doctor.name}</h3>
                 <p className="text-primary font-medium">{doctor.specialty}</p>
-                <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
+                <p className="text-sm text-muted-foreground">{doctor.experience} {t('doctors.yearsExperience')}</p>
 
                 <div className="flex justify-center items-center gap-4 my-4">
                   <div className="flex items-center gap-1">
@@ -185,7 +187,7 @@ export default function DoctorsPage() {
 
                 <div className="mt-auto space-y-4 pt-4 border-t">
                   <div>
-                    <h4 className="text-sm font-semibold mb-2 flex items-center justify-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" /> Available Today</h4>
+                    <h4 className="text-sm font-semibold mb-2 flex items-center justify-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" /> {t('doctors.availableToday')}</h4>
                     <div className="flex flex-wrap justify-center gap-2">
                       {doctor.availableSlots.slice(0, 4).map(slot => (
                         <Badge key={slot} variant="outline" className="text-primary border-primary/30 bg-primary/5">{slot}</Badge>
@@ -193,7 +195,7 @@ export default function DoctorsPage() {
                     </div>
                   </div>
                   <Button className="w-full transition-transform duration-300 hover:scale-105" asChild>
-                    <Link href="/book">Book Appointment</Link>
+                    <Link href="/book">{t('doctors.bookAppointment')}</Link>
                   </Button>
                 </div>
               </CardContent>

@@ -15,5 +15,127 @@
         "liveQueue": "Live Queue Status",
         "webSearch": "Web Search for"
     }
+  },
+  "header": {
+    "aiTools": {
+      "title": "AI Tools",
+      "symptomChecker": "Symptom Checker",
+      "riskAssessment": "Risk Assessment",
+      "reportSummarizer": "Report Summarizer",
+      "aiAssistant": "AI Assistant"
+    },
+    "nav": {
+      "findDoctor": "Find a Doctor",
+      "myDashboard": "My Dashboard",
+      "doctorPortal": "Doctor Portal",
+      "login": "Login",
+      "getStarted": "Get Started",
+      "signUp": "Sign Up"
+    },
+    "userMenu": {
+      "dashboard": "Dashboard",
+      "profile": "Profile Settings",
+      "logout": "Logout"
+    },
+    "toggleLanguage": "Toggle language",
+    "toggleMenu": "Toggle Menu"
+  },
+  "features": {
+    "title": "The Future of Personalized Healthcare",
+    "subtitle": "AcuMedic integrates state-of-the-art technology to provide a healthcare experience that is intelligent, convenient, and tailored to you.",
+    "symptom": {
+      "title": "AI Symptom Analysis",
+      "description": "Get immediate insights on your symptoms with our advanced AI triage."
+    },
+    "queue": {
+      "title": "Live Queue Tracking",
+      "description": "See your real-time position and estimated wait time for your appointment."
+    },
+    "assistant": {
+      "title": "AcuMedic Assistant",
+      "description": "Ask any health question, anytime. Get instant, helpful answers from our AI."
+    },
+    "tele": {
+      "title": "Tele-Consultations",
+      "description": "Connect with top doctors from the comfort of your home via secure video."
+    },
+    "inCall": {
+      "title": "In-Call AI Assistant",
+      "description": "Have a voice-enabled AI assistant join your video calls to provide real-time support."
+    },
+    "risk": {
+      "title": "Predictive Health Risk",
+      "description": "Forecast your long-term health risks for chronic diseases using AI."
+    },
+    "summarizer": {
+      "title": "Report Summarizer",
+      "description": "Translate complex lab reports into simple, easy-to-understand language."
+    }
+  },
+  "cta": {
+    "title": "Ready to Take Control of Your Health?",
+    "subtitle": "Experience a smarter, simpler way to manage your healthcare. Get started with our AI assistant or find the right doctor for you today.",
+    "symptomCheck": "Start AI Symptom Check",
+    "findDoctor": "Find a Doctor"
+  },
+  "footer": {
+    "tagline": "Your intelligent health partner, available 24/7.",
+    "copyright": "AcuMedic. All rights reserved.",
+    "patients": {
+      "title": "Patients",
+      "symptomChecker": "Symptom Checker",
+      "aiAssistant": "AI Assistant",
+      "findDoctor": "Find a Doctor",
+      "bookAppointment": "Book Appointment",
+      "dashboard": "My Dashboard"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "contact": "Contact",
+      "careers": "Careers"
+    },
+    "legal": {
+      "title": "Legal",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    }
+  },
+  "book": {
+    "step": "Step",
+    "of": "of",
+    "chooseConsultation": "Choose Consultation Type",
+    "inClinic": "In-Clinic Visit",
+    "inClinicDesc": "Book an appointment at the doctor's clinic.",
+    "videoConsult": "Video Consultation",
+    "videoConsultDesc": "Consult with the doctor from the comfort of your home.",
+    "selectDateTime": "Select Date & Time",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "confirmedTitle": "Appointment Confirmed!",
+    "confirmedDesc": "Your appointment with",
+    "date": "Date",
+    "time": "Time",
+    "type": "Type",
+    "goToDashboard": "Go to Dashboard",
+    "previous": "Previous",
+    "next": "Next",
+    "confirmBooking": "Confirm Booking"
+  },
+  "doctors": {
+    "title": "Find Your Doctor",
+    "subtitle": "Search our network of top specialists and book your appointment today.",
+    "searchLabel": "Doctor Name or Specialty",
+    "searchPlaceholder": "e.g., Dr. Carter or Cardiologist",
+    "locationLabel": "Location",
+    "allLocations": "All Locations",
+    "availabilityLabel": "Availability",
+    "anyTime": "Any Time",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "thisWeekend": "This Weekend",
+    "yearsExperience": "years experience",
+    "availableToday": "Available Today",
+    "bookAppointment": "Book Appointment"
   }
 }

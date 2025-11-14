@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { useTranslation } from '@/hooks/use-translation';
 
 const timeSlots = [
   '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
@@ -35,6 +36,7 @@ export default function BookingPage() {
   const [consultType, setConsultType] = useState<'clinic' | 'video'>('clinic');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
+  const { t, language } = useTranslation();
   
   // Set initial date on client-side to avoid hydration mismatch
   useEffect(() => {
@@ -74,26 +76,26 @@ export default function BookingPage() {
                   <CardDescription>{doctor.specialty}</CardDescription>
                 </div>
               </div>
-              <Badge variant="secondary" className="hidden sm:inline-flex">Step {step} of 3</Badge>
+              <Badge variant="secondary" className="hidden sm:inline-flex">{t('book.step')} {step} {t('book.of')} 3</Badge>
             </div>
           </CardHeader>
           <CardContent>
             {step === 1 && (
               <motion.div variants={containerVariants} initial="hidden" animate="visible">
-                <h3 className="text-xl font-semibold mb-4">Choose Consultation Type</h3>
+                <h3 className="text-xl font-semibold mb-4">{t('book.chooseConsultation')}</h3>
                 <RadioGroup defaultValue="clinic" onValueChange={(value: 'clinic' | 'video') => setConsultType(value)} className="space-y-2">
                   <Label htmlFor="clinic" className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-300 transform hover:-translate-y-1">
                     <RadioGroupItem value="clinic" id="clinic" />
                     <div>
-                      <p className="font-bold">In-Clinic Visit</p>
-                      <p className="text-sm text-muted-foreground">Book an appointment at the doctor's clinic.</p>
+                      <p className="font-bold">{t('book.inClinic')}</p>
+                      <p className="text-sm text-muted-foreground">{t('book.inClinicDesc')}</p>
                     </div>
                   </Label>
                   <Label htmlFor="video" className="flex items-center gap-4 p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-300 transform hover:-translate-y-1">
                     <RadioGroupItem value="video" id="video" />
                     <div>
-                      <p className="font-bold">Video Consultation</p>
-                      <p className="text-sm text-muted-foreground">Consult with the doctor from the comfort of your home.</p>
+                      <p className="font-bold">{t('book.videoConsult')}</p>
+                      <p className="text-sm text-muted-foreground">{t('book.videoConsultDesc')}</p>
                     </div>
                   </Label>
                 </RadioGroup>
@@ -102,10 +104,10 @@ export default function BookingPage() {
 
             {step === 2 && (
               <motion.div variants={containerVariants} initial="hidden" animate="visible">
-                <h3 className="text-xl font-semibold mb-4">Select Date & Time</h3>
+                <h3 className="text-xl font-semibold mb-4">{t('book.selectDateTime')}</h3>
                  <div className="grid md:grid-cols-2 gap-8">
                   <div>
-                    <h4 className="font-medium text-center mb-2">Select Date</h4>
+                    <h4 className="font-medium text-center mb-2">{t('book.selectDate')}</h4>
                     <Calendar
                       mode="single"
                       selected={selectedDate}
@@ -115,7 +117,7 @@ export default function BookingPage() {
                     />
                   </div>
                   <div>
-                    <h4 className="font-medium text-center mb-2">Select Time</h4>
+                    <h4 className="font-medium text-center mb-2">{t('book.selectTime')}</h4>
                     <div className="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-2">
                       {timeSlots.map(slot => (
                         <Button 
@@ -136,27 +138,27 @@ export default function BookingPage() {
             {step === 3 && (
               <motion.div variants={containerVariants} initial="hidden" animate="visible" className="text-center">
                  <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-                 <h2 className="text-2xl font-bold font-headline">Appointment Confirmed!</h2>
-                 <p className="text-muted-foreground mt-2">Your appointment with {doctor.name} is booked.</p>
+                 <h2 className="text-2xl font-bold font-headline">{t('book.confirmedTitle')}</h2>
+                 <p className="text-muted-foreground mt-2">{t('book.confirmedDesc')} {doctor.name}.</p>
                  <Card className="mt-6 text-left p-6 bg-muted/50">
-                    <p><strong>Date:</strong> {selectedDate?.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                    <p><strong>Time:</strong> {selectedTime}</p>
-                    <p><strong>Type:</strong> {consultType === 'clinic' ? 'In-Clinic Visit' : 'Video Consultation'}</p>
+                    <p><strong>{t('book.date')}:</strong> {selectedDate?.toLocaleDateString(language, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <p><strong>{t('book.time')}:</strong> {selectedTime}</p>
+                    <p><strong>{t('book.type')}:</strong> {consultType === 'clinic' ? t('book.inClinic') : t('book.videoConsult')}</p>
                  </Card>
-                 <Button className="mt-6 w-full transition-transform duration-300 hover:scale-105" asChild><Link href="/dashboard">Go to Dashboard</Link></Button>
+                 <Button className="mt-6 w-full transition-transform duration-300 hover:scale-105" asChild><Link href="/dashboard">{t('book.goToDashboard')}</Link></Button>
               </motion.div>
             )}
 
             <div className="mt-8 flex justify-between">
               {step > 1 && (
                 <Button variant="outline" onClick={handlePrevStep} className="transition-transform duration-300 hover:scale-105">
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+                  <ChevronLeft className="mr-2 h-4 w-4" /> {t('book.previous')}
                 </Button>
               )}
               <div className="flex-grow" />
               {step < 3 && (
                 <Button onClick={handleNextStep} disabled={step === 2 && (!selectedDate || !selectedTime)} className="transition-transform duration-300 hover:scale-105">
-                  {step === 2 ? 'Confirm Booking' : 'Next'} <ChevronRight className="ml-2 h-4 w-4" />
+                  {step === 2 ? t('book.confirmBooking') : t('book.next')} <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
             </div>

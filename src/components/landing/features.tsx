@@ -3,51 +3,17 @@ import { Bot, Users, Video, FileText, HeartPulse, MessageSquareQuote } from 'luc
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useTranslation } from '@/hooks/use-translation';
 
-const features = [
-  {
-    icon: <Bot className="h-8 w-8 text-primary" />,
-    title: "AI Symptom Analysis",
-    description: "Get immediate insights on your symptoms with our advanced AI triage.",
-    href: "/symptom-checker",
-  },
-  {
-    icon: <Users className="h-8 w-8 text-primary" />,
-    title: "Live Queue Tracking",
-    description: "See your real-time position and estimated wait time for your appointment.",
-    href: "/queue",
-  },
-  {
-    icon: <Bot className="h-8 w-8 text-primary" />,
-    title: "AcuMedic Assistant",
-    description: "Ask any health question, anytime. Get instant, helpful answers from our AI.",
-    href: "/ai-assistant",
-  },
-  {
-    icon: <Video className="h-8 w-8 text-primary" />,
-    title: "Tele-Consultations",
-    description: "Connect with top doctors from the comfort of your home via secure video.",
-    href: "/dashboard",
-  },
-  {
-    icon: <MessageSquareQuote className="h-8 w-8 text-primary" />,
-    title: "In-Call AI Assistant",
-    description: "Have a voice-enabled AI assistant join your video calls to provide real-time support.",
-    href: "/dashboard",
-  },
-  {
-    icon: <HeartPulse className="h-8 w-8 text-primary" />,
-    title: "Predictive Health Risk",
-    description: "Forecast your long-term health risks for chronic diseases using AI.",
-    href: "/health-risk-assessment",
-  },
-  {
-    icon: <FileText className="h-8 w-8 text-primary" />,
-    title: "Report Summarizer",
-    description: "Translate complex lab reports into simple, easy-to-understand language.",
-    href: "/report-summarizer",
-  },
-];
+const featureIcons = {
+  symptom: <Bot className="h-8 w-8 text-primary" />,
+  queue: <Users className="h-8 w-8 text-primary" />,
+  assistant: <Bot className="h-8 w-8 text-primary" />,
+  tele: <Video className="h-8 w-8 text-primary" />,
+  inCall: <MessageSquareQuote className="h-8 w-8 text-primary" />,
+  risk: <HeartPulse className="h-8 w-8 text-primary" />,
+  summarizer: <FileText className="h-8 w-8 text-primary" />,
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -72,6 +38,53 @@ const itemVariants = {
 };
 
 export default function Features() {
+  const { t } = useTranslation();
+
+  const features = [
+    {
+      icon: featureIcons.symptom,
+      title: t('features.symptom.title'),
+      description: t('features.symptom.description'),
+      href: "/symptom-checker",
+    },
+    {
+      icon: featureIcons.queue,
+      title: t('features.queue.title'),
+      description: t('features.queue.description'),
+      href: "/queue",
+    },
+    {
+      icon: featureIcons.assistant,
+      title: t('features.assistant.title'),
+      description: t('features.assistant.description'),
+      href: "/ai-assistant",
+    },
+    {
+      icon: featureIcons.tele,
+      title: t('features.tele.title'),
+      description: t('features.tele.description'),
+      href: "/dashboard",
+    },
+    {
+      icon: featureIcons.inCall,
+      title: t('features.inCall.title'),
+      description: t('features.inCall.description'),
+      href: "/dashboard",
+    },
+    {
+      icon: featureIcons.risk,
+      title: t('features.risk.title'),
+      description: t('features.risk.description'),
+      href: "/health-risk-assessment",
+    },
+    {
+      icon: featureIcons.summarizer,
+      title: t('features.summarizer.title'),
+      description: t('features.summarizer.description'),
+      href: "/report-summarizer",
+    },
+  ];
+
   return (
     <section className="py-20 md:py-28 bg-background">
       <div className="container">
@@ -81,14 +94,14 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold font-headline">The Future of Personalized Healthcare</motion.h2>
+            className="text-3xl md:text-4xl font-bold font-headline">{t('features.title')}</motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
             className="mt-4 text-muted-foreground md:text-lg">
-            AcuMedic integrates state-of-the-art technology to provide a healthcare experience that is intelligent, convenient, and tailored to you.
+            {t('features.subtitle')}
           </motion.p>
         </div>
         <motion.div 

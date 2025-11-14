@@ -25,28 +25,31 @@ import {
 } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/hooks/use-translation';
 
-
-const mainNavLinks = [
-  { href: "/doctors", label: "Find a Doctor" },
-  { href: "/dashboard", label: "My Dashboard", auth: true, role: 'patient' },
-  { href: "/doctor/dashboard", label: "Doctor Portal", auth: true, role: 'doctor' },
-];
-
-const aiToolsLinks = [
-  { href: "/symptom-checker", label: "Symptom Checker" },
-  { href: "/health-risk-assessment", label: "Risk Assessment" },
-  { href: "/report-summarizer", label: "Report Summarizer"},
-  { href: "/ai-assistant", label: "AI Assistant" },
-]
 
 export default function Header({className}: {className?: string}) {
   const pathname = usePathname();
   const { language, setLanguage } = useContext(LanguageContext);
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const { t } = useTranslation();
+
   // This is a mock role. In a real app, this would come from the user's profile in the database.
   const userRole = user ? (user.email?.includes('doctor') ? 'doctor' : 'patient') : null;
+
+  const mainNavLinks = [
+    { href: "/doctors", label: t('header.nav.findDoctor') },
+    { href: "/dashboard", label: t('header.nav.myDashboard'), auth: true, role: 'patient' },
+    { href: "/doctor/dashboard", label: t('header.nav.doctorPortal'), auth: true, role: 'doctor' },
+  ];
+  
+  const aiToolsLinks = [
+    { href: "/symptom-checker", label: t('header.aiTools.symptomChecker') },
+    { href: "/health-risk-assessment", label: t('header.aiTools.riskAssessment') },
+    { href: "/report-summarizer", label: t('header.aiTools.reportSummarizer')},
+    { href: "/ai-assistant", label: t('header.aiTools.aiAssistant') },
+  ]
 
   const handleLogout = async () => {
     try {
@@ -82,7 +85,7 @@ export default function Header({className}: {className?: string}) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary data-[state=open]:text-primary">
-                  AI Tools <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                  {t('header.aiTools.title')} <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
@@ -124,7 +127,7 @@ export default function Header({className}: {className?: string}) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Globe className="h-5 w-5" />
-                  <span className="sr-only">Toggle language</span>
+                  <span className="sr-only">{t('header.toggleLanguage')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -162,25 +165,25 @@ export default function Header({className}: {className?: string}) {
                     </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={userRole === 'doctor' ? "/doctor/dashboard" : "/dashboard"}>Dashboard</Link>
+                    <Link href={userRole === 'doctor' ? "/doctor/dashboard" : "/dashboard"}>{t('header.userMenu.dashboard')}</Link>
                   </DropdownMenuItem>
                    <DropdownMenuItem asChild>
-                    <Link href="/dashboard?tab=profile">Profile Settings</Link>
+                    <Link href="/dashboard?tab=profile">{t('header.userMenu.profile')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/10">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Logout
+                    {t('header.userMenu.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <div className="hidden sm:flex items-center gap-2">
                  <Button variant="ghost" asChild>
-                    <Link href="/login">Login</Link>
+                    <Link href="/login">{t('header.nav.login')}</Link>
                 </Button>
                 <Button asChild className="transition-transform duration-300 hover:scale-105">
-                    <Link href="/signup">Get Started</Link>
+                    <Link href="/signup">{t('header.nav.getStarted')}</Link>
                 </Button>
               </div>
             )}
@@ -190,7 +193,7 @@ export default function Header({className}: {className?: string}) {
                 <SheetTrigger asChild>
                   <Button variant="outline" size="icon">
                     <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
+                    <span className="sr-only">{t('header.toggleMenu')}</span>
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right">
@@ -215,10 +218,10 @@ export default function Header({className}: {className?: string}) {
                      {!user && (
                         <div className="flex flex-col gap-2 mt-4">
                              <Button asChild className="w-full">
-                                <Link href="/login">Login</Link>
+                                <Link href="/login">{t('header.nav.login')}</Link>
                             </Button>
                              <Button variant="outline" asChild className="w-full">
-                                <Link href="/signup">Sign Up</Link>
+                                <Link href="/signup">{t('header.nav.signUp')}</Link>
                             </Button>
                         </div>
                     )}
