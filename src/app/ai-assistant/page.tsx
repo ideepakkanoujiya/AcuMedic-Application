@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Bot, Mic, Send, User, Loader2 } from 'lucide-react';
 import { aiSymptomChecker } from '@/ai/flows/ai-symptom-checker';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { LanguageContext } from '@/context/language-context';
 
 interface Message {
   id: string;
@@ -55,6 +56,7 @@ export default function AiAssistantPage() {
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { language } = useContext(LanguageContext);
   
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -76,6 +78,7 @@ export default function AiAssistantPage() {
     try {
       const result = await aiSymptomChecker({
         symptoms: text,
+        language: language,
         voiceInput: isVoiceInput ? text : undefined,
       });
       
@@ -103,7 +106,7 @@ export default function AiAssistantPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, toast]);
+  }, [isLoading, toast, language]);
 
   useEffect(() => {
     // This effect should run only once to initialize speech recognition.
@@ -156,6 +159,12 @@ export default function AiAssistantPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array ensures this runs only ONCE.
+
+  useEffect(() => {
+    if (recognitionRef.current) {
+        recognitionRef.current.lang = language;
+    }
+  }, [language]);
 
 
   const handleMicClick = () => {
