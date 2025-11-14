@@ -1,0 +1,122 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import AgoraUIKit from 'agora-react-uikit';
+import { notFound, useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+import { useUser } from '@/firebase';
+
+interface VideoCallProps {
+  params: {
+    channelName: string;
+  };
+}
+
+export default function VideoCall({ params }: VideoCallProps) {
+  const [videoCall, setVideoCall] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
+  const { channelName } = params;
+
+  useEffect(() => {
+    if (isUserLoading) return;
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    const fetchToken = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/agora/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            channelName,
+            uid: 0, // Using 0 allows Agora to assign a random integer UID
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch Agora token');
+        }
+        const data = await response.json();
+        setToken(data.token);
+      } catch (err: any) {
+        console.error('Token fetch error:', err);
+        setError('Could not connect to the video service. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchToken();
+  }, [channelName, user, isUserLoading, router]);
+
+  if (isUserLoading || loading) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Connecting to video session...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+     return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center">
+        <h2 className="text-2xl font-bold text-destructive">Connection Failed</h2>
+        <p className="mt-2 text-muted-foreground">{error}</p>
+        <button onClick={() => router.back()} className="mt-6">Go Back</button>
+      </div>
+    );
+  }
+  
+  if (!channelName) {
+      notFound();
+  }
+
+  const callbacks = {
+    EndCall: () => {
+      setVideoCall(false);
+      router.push('/dashboard');
+    },
+  };
+
+  const appId = process.env.NEXT_PUBLIC_AGORA_APP_ID;
+
+  if (!appId || !token) {
+    return (
+       <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center">
+        <h2 className="text-2xl font-bold text-destructive">Configuration Error</h2>
+        <p className="mt-2 text-muted-foreground">The application is not configured correctly for video calls.</p>
+      </div>
+    );
+  }
+
+  return videoCall ? (
+    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
+      <AgoraUIKit
+        rtcProps={{
+          appId: appId,
+          channel: channelName,
+          token: token,
+          role: 'publisher',
+          uid: 0,
+        }}
+        callbacks={callbacks}
+        styleProps={{
+          container: { height: '100%', width: '100%', borderRadius: 0 },
+        }}
+      />
+    </div>
+  ) : (
+     <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+        <h2 className="text-2xl font-bold">Call Ended</h2>
+        <button onClick={() => router.push('/dashboard')} className="mt-6">Back to Dashboard</button>
+      </div>
+  );
+}

@@ -27,6 +27,8 @@ const itemVariants = {
 
 
 export default function Dashboard() {
+  const appointmentId = "appointment123"; // This should be dynamic in a real app
+
   return (
     <div className="container mx-auto py-8 md:py-12">
       <motion.div
@@ -86,7 +88,9 @@ export default function Dashboard() {
                             <p className="text-sm text-muted-foreground">Today, June 28, 2024 at 2:30 PM - <span className="text-primary font-medium">Video Consultation</span></p>
                         </div>
                          <div className="flex gap-2 w-full md:w-auto">
-                            <Button className="flex-1"><Video className="mr-2 h-4 w-4"/>Join Video Call</Button>
+                            <Button asChild className="flex-1">
+                                <Link href={`/video/${appointmentId}`}><Video className="mr-2 h-4 w-4"/>Join Video Call</Link>
+                            </Button>
                             <Button variant="outline" asChild className="flex-1">
                               <Link href="/queue">Check Queue</Link>
                             </Button>
