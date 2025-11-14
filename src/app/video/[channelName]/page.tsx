@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, use } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { notFound, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -31,8 +31,9 @@ export default function VideoCall({ params }: VideoCallProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { channelName } = use(params);
+  const { channelName } = params;
   
+  // Using a static numeric UID for simplicity. In a real app, this would be dynamic and unique.
   const userUid = 1002;
   
   const handleEndCall = useCallback(() => {
@@ -55,7 +56,7 @@ export default function VideoCall({ params }: VideoCallProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             channelName,
-            uid: userUid,
+            uid: userUid, // The UID to associate with the token
           }),
         });
 
@@ -74,7 +75,7 @@ export default function VideoCall({ params }: VideoCallProps) {
     };
 
     fetchToken();
-  }, [channelName, user, isUserLoading, router, userUid]);
+  }, [channelName, user, isUserLoading, router]);
 
   if (isUserLoading || loading) {
     return (
@@ -123,6 +124,10 @@ export default function VideoCall({ params }: VideoCallProps) {
           token: token,
           role: 'host',
           uid: userUid,
+        }}
+        rtmProps={{
+          token: token,
+          uid: userUid.toString(), // RTM requires a string UID
         }}
         callbacks={callbacks}
       />
