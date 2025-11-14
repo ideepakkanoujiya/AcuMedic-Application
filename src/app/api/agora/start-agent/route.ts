@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   // Check if all required environment variables are set
-  if (!appId || !appCertificate || !customerId || !customerSecret || !geminiApiKey || !baseUrl) {
+  if (!appId || !appCertificate || !customerId || !customerSecret || !geminiApiKey || !baseUrl || customerId === 'YOUR_AGORA_CUSTOMER_ID' || customerSecret === 'YOUR_AGORA_CUSTOMER_SECRET') {
     console.error('One or more required environment variables for Agora AI Agent are not set.');
     return NextResponse.json({ error: 'Server configuration error for AI agent.' }, { status: 500 });
   }

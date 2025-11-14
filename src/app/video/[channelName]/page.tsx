@@ -58,7 +58,7 @@ export default function VideoCall({ params }: VideoCallProps) {
       return;
     }
 
-    const fetchToken = async () => {
+    const fetchTokenAndStartAgent = async () => {
       try {
         setLoading(true);
         const response = await fetch('/api/agora/token', {
@@ -87,8 +87,10 @@ export default function VideoCall({ params }: VideoCallProps) {
       }
     };
 
-    fetchToken();
-  }, [channelName, user, isUserLoading, router, startAgent, userUid]);
+    fetchTokenAndStartAgent();
+  // The dependency array is intentionally kept minimal.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelName, user, isUserLoading, router, userUid]);
 
   if (isUserLoading || loading) {
     return (
