@@ -150,7 +150,7 @@ export default function VideoCall({ params }: VideoCallProps) {
             appId: appId,
             channel: channelName,
             token: token,
-            role: 'publisher',
+            role: 'host',
             uid: userUid, // Ensure the UI kit joins with the correct static UID
           }}
           callbacks={callbacks}
